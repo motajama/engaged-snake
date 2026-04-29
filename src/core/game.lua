@@ -34,6 +34,7 @@ function Game.new()
         highscores = { entries = {} },
         state_factories = {},
         session = {},
+        suppress_mouse_until = 0,
     }, Game)
 
     self.audio = Audio.new(settings)
@@ -166,11 +167,17 @@ function Game:keyreleased(key)
     self.input:keyreleased(key)
 end
 
-function Game:mousepressed(x, y)
+function Game:mousepressed(x, y, _button, istouch)
+    local now = love.timer and love.timer.getTime and love.timer.getTime() or 0
+    if istouch or now < self.suppress_mouse_until then
+        return
+    end
     self.input:pointerpressed(x, y)
 end
 
 function Game:touchpressed(_id, x, y)
+    local now = love.timer and love.timer.getTime and love.timer.getTime() or 0
+    self.suppress_mouse_until = now + 0.35
     local width, height = love.graphics.getDimensions()
     self.input:pointerpressed(x * width, y * height)
 end
