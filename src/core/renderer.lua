@@ -21,35 +21,89 @@ function Renderer.new(logical_width, logical_height, internal_scale)
         screen_height = base_height,
     }, Renderer)
 
-    local width, height = love.graphics.getDimensions()
-    self:resize(width, height)
+    self:sync_dimensions(true)
     return self
 end
 
-function Renderer:resize(width, height)
-    self.screen_width = width
-    self.screen_height = height
+function Renderer:compute_layout(width, height)
+    width = math.max(1, width or self.screen_width or self.base_width)
+    height = math.max(1, height or self.screen_height or self.base_height)
 
     local scale_x = width / self.base_width
     local scale_y = height / self.base_height
-    local scale = math.floor(math.min(scale_x, scale_y))
+    local scale = math.min(scale_x, scale_y)
 
-    if scale < 1 then
-        scale = math.min(scale_x, scale_y)
+    if scale <= 0 then
+        scale = 1
     end
 
-    self.scale = scale
-    self.offset_x = math.floor((width - self.base_width * scale) * 0.5)
-    self.offset_y = math.floor((height - self.base_height * scale) * 0.5)
+    return {
+        screen_width = width,
+        screen_height = height,
+        scale = scale,
+        offset_x = math.floor((width - self.base_width * scale) * 0.5),
+        offset_y = math.floor((height - self.base_height * scale) * 0.5),
+    }
 end
 
-function Renderer:screen_to_game(x, y)
+function Renderer:resize(width, height)
+    local layout = self:compute_layout(width, height)
+    self.screen_width = layout.screen_width
+    self.screen_height = layout.screen_height
+    self.scale = layout.scale
+    self.offset_x = layout.offset_x
+    self.offset_y = layout.offset_y
+end
+
+function Renderer:sync_dimensions(force)
+    local width, height = love.graphics.getDimensions()
+    if force or width ~= self.screen_width or height ~= self.screen_height then
+        self:resize(width, height)
+        return true
+    end
+    return false
+end
+
+function Renderer:to_virtual(x, y)
+    self:sync_dimensions()
     local render_x = (x - self.offset_x) / self.scale
     local render_y = (y - self.offset_y) / self.scale
     return render_x / self.internal_scale, render_y / self.internal_scale
 end
 
+function Renderer:toVirtual(x, y)
+    return self:to_virtual(x, y)
+end
+
+function Renderer:screen_to_game(x, y)
+    return self:to_virtual(x, y)
+end
+
+function Renderer:to_screen(x, y)
+    self:sync_dimensions()
+    return
+        self.offset_x + x * self.internal_scale * self.scale,
+        self.offset_y + y * self.internal_scale * self.scale
+end
+
+function Renderer:toScreen(x, y)
+    return self:to_screen(x, y)
+end
+
+function Renderer:is_inside_virtual(x, y)
+    local virtual_x, virtual_y = self:to_virtual(x, y)
+    return
+        virtual_x >= 0 and virtual_x <= self.logical_width and
+        virtual_y >= 0 and virtual_y <= self.logical_height
+end
+
+function Renderer:isInsideVirtual(x, y)
+    return self:is_inside_virtual(x, y)
+end
+
 function Renderer:draw_scene(draw_fn, post_fn)
+    self:sync_dimensions()
+
     love.graphics.setCanvas(self.canvas)
     love.graphics.clear(0.04, 0.05, 0.08, 1)
     love.graphics.push()

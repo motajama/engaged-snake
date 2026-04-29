@@ -53,7 +53,11 @@ function Input:keyreleased(key)
 end
 
 function Input:pointerpressed(x, y)
-    local gx, gy = self.renderer:screen_to_game(x, y)
+    if not self.renderer:is_inside_virtual(x, y) then
+        return
+    end
+
+    local gx, gy = self.renderer:to_virtual(x, y)
     self.tapped_points[#self.tapped_points + 1] = { x = gx, y = gy }
     self.any_press = true
 end

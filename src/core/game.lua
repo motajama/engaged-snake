@@ -132,12 +132,14 @@ function Game:should_show_touch_controls()
 end
 
 function Game:update(dt)
+    self.renderer:sync_dimensions()
     self.crt:update(dt)
     self.state_machine:update(dt)
     self.input:begin_frame()
 end
 
 function Game:draw()
+    self.renderer:sync_dimensions()
     local post = nil
     if self.settings.values.video_mode == "mono_crt" then
         post = function(canvas)
