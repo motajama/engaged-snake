@@ -22,7 +22,7 @@ return function(game)
 
     function state:activate(index)
         local item = self.items[index]
-        game.audio:play_sfx(game.dataset.sfx.menu_confirm or "menu_confirm")
+        game.audio:play_sfx(game:get_sfx_id("menu_confirm", "menu_confirm"))
         game.state_machine:change(item.target)
     end
 
@@ -33,7 +33,7 @@ return function(game)
     local function set_selected(state_ref, index)
         if state_ref.selected ~= index then
             state_ref.selected = index
-            game.audio:play_sfx(game.dataset.sfx.menu_move or "menu_move")
+            game.audio:play_sfx(game:get_sfx_id("menu_move", "menu_move"))
         end
     end
 

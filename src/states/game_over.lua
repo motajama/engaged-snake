@@ -10,7 +10,7 @@ return function(game)
     function state:update(dt)
         self.timer = self.timer + dt
         if self.timer > 1 and game.input:any_pressed() then
-            if game.input:confirm_pressed() then
+            if game.input:confirm_pressed() or #game.input:get_taps() > 0 then
                 game:start_new_run()
                 game.state_machine:change("story")
             else

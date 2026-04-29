@@ -236,7 +236,19 @@ function Assets:get_image(name)
 end
 
 function Assets:get_head_quad(frame)
-    return self.quads[frame]
+    return self.quads[frame] or self.quads[1]
+end
+
+function Assets:get_head_frame_count()
+    return #self.quads
+end
+
+function Assets:get_head_dimensions()
+    local image = self.images.head
+    local frame_count = math.max(1, self:get_head_frame_count())
+    local width = image and image:getWidth() or 64
+    local height = image and image:getHeight() or 64
+    return width / frame_count, height
 end
 
 function Assets:get_difficulty_face(index)

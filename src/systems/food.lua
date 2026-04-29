@@ -19,7 +19,7 @@ local function pick_cell(level, snake, occupied)
         end
     end
 
-    return 0, 0
+    return nil, nil
 end
 
 function Food.spawn_set(level, snake, counts)
@@ -27,20 +27,33 @@ function Food.spawn_set(level, snake, counts)
     local occupied = {}
     local good_count = counts and counts.good_count or level.good_count
     local bad_count = counts and counts.bad_count or level.bad_count
+    local spawned_good = 0
+    local spawned_bad = 0
 
     for _ = 1, good_count do
         local x, y = pick_cell(level, snake, occupied)
+        if not x then
+            break
+        end
         occupied[x .. ":" .. y] = true
         foods[#foods + 1] = { x = x, y = y, kind = "good" }
+        spawned_good = spawned_good + 1
     end
 
     for _ = 1, bad_count do
         local x, y = pick_cell(level, snake, occupied)
+        if not x then
+            break
+        end
         occupied[x .. ":" .. y] = true
         foods[#foods + 1] = { x = x, y = y, kind = "bad" }
+        spawned_bad = spawned_bad + 1
     end
 
-    return foods
+    return foods, {
+        good_count = spawned_good,
+        bad_count = spawned_bad,
+    }
 end
 
 function Food.consume_at(foods, x, y)

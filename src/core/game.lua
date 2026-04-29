@@ -91,12 +91,33 @@ function Game:get_difficulty_profile(difficulty_id)
     return profile
 end
 
+function Game:get_sfx_id(key, fallback)
+    local sfx = self.dataset and self.dataset.sfx or nil
+    if sfx and sfx[key] then
+        return sfx[key]
+    end
+    return fallback
+end
+
 function Game:is_mobile_device()
     if love.system and love.system.getOS then
         local os_name = love.system.getOS()
         return os_name == "Android" or os_name == "iOS"
     end
     return false
+end
+
+function Game:is_web_device()
+    if love.system and love.system.getOS then
+        return love.system.getOS() == "Web"
+    end
+    return false
+end
+
+function Game:is_compact_screen()
+    local width = self.renderer.screen_width or 0
+    local height = self.renderer.screen_height or 0
+    return math.min(width, height) > 0 and math.min(width, height) <= 900
 end
 
 function Game:should_show_touch_controls()
@@ -107,7 +128,7 @@ function Game:should_show_touch_controls()
     if mode == "off" then
         return false
     end
-    return self:is_mobile_device()
+    return self:is_mobile_device() or (self:is_web_device() and self:is_compact_screen())
 end
 
 function Game:update(dt)

@@ -66,13 +66,13 @@ return function(game)
                     self.tick_timer = self.tick_timer + dt
                     if self.tick_timer >= 0.045 then
                         self.tick_timer = 0
-                        game.audio:play_sfx(game.dataset.sfx.stats_tick or "stats_tick")
+                        game.audio:play_sfx(game:get_sfx_id("stats_tick", "stats_tick"))
                     end
                 end
 
                 if done then
                     line.value = line.counter:get_display_value()
-                    game.audio:play_sfx(game.dataset.sfx.stats_done or "stats_done")
+                    game.audio:play_sfx(game:get_sfx_id("stats_done", "stats_done"))
                     self.current_line = self.current_line + 1
                     self.tick_timer = 0
                     if self.current_line > #self.lines then

@@ -25,6 +25,55 @@ return function(game)
         },
     }
 
+    local function create_level_snake(level)
+        local snake = Snake.new(2, 0)
+        local width = math.max(1, level.grid_width or 1)
+        local height = math.max(1, level.grid_height or 1)
+
+        if width >= 3 then
+            local head_x = math.max(2, math.min(width - 1, math.floor(width * 0.5)))
+            local head_y = math.max(0, math.min(height - 1, math.floor(height * 0.5)))
+            snake.body = {
+                { x = head_x, y = head_y },
+                { x = head_x - 1, y = head_y },
+                { x = head_x - 2, y = head_y },
+            }
+            snake.direction = "right"
+            snake.queued_direction = "right"
+            return snake
+        end
+
+        if height >= 3 then
+            local head_x = math.max(0, math.min(width - 1, math.floor(width * 0.5)))
+            local head_y = math.max(2, math.min(height - 1, math.floor(height * 0.5)))
+            snake.body = {
+                { x = head_x, y = head_y },
+                { x = head_x, y = head_y - 1 },
+                { x = head_x, y = head_y - 2 },
+            }
+            snake.direction = "down"
+            snake.queued_direction = "down"
+            return snake
+        end
+
+        snake.body = {
+            { x = math.max(0, math.min(width - 1, math.floor(width * 0.5))), y = math.max(0, math.min(height - 1, math.floor(height * 0.5))) },
+        }
+        snake.direction = width > 1 and "right" or "down"
+        snake.queued_direction = snake.direction
+        return snake
+    end
+
+    local function count_foods(foods, kind)
+        local count = 0
+        for _, food in ipairs(foods or {}) do
+            if food.kind == kind then
+                count = count + 1
+            end
+        end
+        return count
+    end
+
     local function apply_penalty()
         game.session.lives = game.session.lives - 1
         game.session.level_stats.bad_hits = game.session.level_stats.bad_hits + 1
@@ -49,19 +98,19 @@ return function(game)
         self.theme = self.level.theme or {}
         self.good_food_def = get_food_def("good")
         self.bad_food_def = get_food_def("bad")
-        self.snake = Snake.new(5, 5)
+        self.snake = create_level_snake(self.level)
         self.food_counts = {
             good_count = math.max(1, math.floor(self.level.good_count * (self.difficulty.good_food_multiplier or 1) + 0.5)),
             bad_count = math.max(0, math.floor(self.level.bad_count * (self.difficulty.bad_food_multiplier or 1) + 0.5)),
         }
-        self.goal_good = self.food_counts.good_count
-        self.foods = Food.spawn_set(self.level, self.snake, self.food_counts)
+        self.foods, self.food_counts = Food.spawn_set(self.level, self.snake, self.food_counts)
+        self.goal_good = count_foods(self.foods, "good")
         self.speed = self.difficulty.initial_speed or 6
         self.speed_increment = self.difficulty.speed_increment or 0.25
         self.tick_length = 1 / self.speed
         self.tick_timer = 0
         self:update_layout()
-        self.quotes:reset(self.level, game.localization)
+        self.quotes:reset(self.level, game.localization, game.assets:get_head_frame_count())
         game.session.level_stats = {
             good_collected = 0,
             bad_hits = 0,
@@ -138,11 +187,11 @@ return function(game)
                         game.session.level_stats.good_collected = game.session.level_stats.good_collected + 1
                         self.speed = self.speed + self.speed_increment
                         self.tick_length = math.max(0.05, 1 / self.speed)
-                        game.audio:play_sfx(game.dataset.sfx.good_collect)
+                        game.audio:play_sfx(game:get_sfx_id("good_collect", "pickup_good"))
                     else
                         self.snake:shrink(1)
                         apply_penalty()
-                        game.audio:play_sfx(game.dataset.sfx.bad_hit)
+                        game.audio:play_sfx(game:get_sfx_id("bad_hit", "pickup_bad"))
                     end
                 end
             end
@@ -165,7 +214,7 @@ return function(game)
     end
 
     function state:reset_snake()
-        self.snake = Snake.new(5, 5)
+        self.snake = create_level_snake(self.level)
     end
 
     function state:draw_grid()
@@ -219,6 +268,12 @@ return function(game)
         local width = game.renderer.logical_width
         local quote = self.quotes:get_text()
         local head_frame = self.quotes:is_speaking() and self.quotes:get_frame() or 1
+        local head_w, head_h = game.assets:get_head_dimensions()
+        local head_scale = math.min(24 / math.max(1, head_w), 24 / math.max(1, head_h))
+        local head_draw_w = head_w * head_scale
+        local head_draw_h = head_h * head_scale
+        local head_x = width - 8 - head_draw_w
+        local head_y = 4
         local good_name = game.localization:get(self.good_food_def.name_key)
         local bad_name = game.localization:get(self.bad_food_def.name_key)
         local hud_bg = game.assets:get_palette_color(self.theme.hud_bg, { 0.03, 0.07, 0.11, 0.78 })
@@ -245,14 +300,15 @@ return function(game)
         love.graphics.printf(bad_name, 194, 15, 62, "left")
 
         love.graphics.setColor(1, 1, 1, 1)
-        love.graphics.draw(game.assets:get_image("head"), game.assets:get_head_quad(head_frame), width - 34, 4, 0, 0.36, 0.36)
+        love.graphics.draw(game.assets:get_image("head"), game.assets:get_head_quad(head_frame), head_x, head_y, 0, head_scale, head_scale)
 
         if quote then
             local bubble_x = width - 148
             local bubble_y = 2
             local bubble_w = 98
             local bubble_h = 28
-            local head_center_y = 4 + math.floor((64 * 0.36) * 0.5)
+            local head_center_y = head_y + math.floor(head_draw_h * 0.5)
+            local head_anchor_x = head_x + math.floor(head_draw_w * 0.4)
             local tail_y = math.max(bubble_y + 6, math.min(bubble_y + bubble_h - 6, head_center_y))
             local bubble_bg = game.assets:get_palette_color(self.theme.quote_bubble_bg, { 1, 1, 1, 1 })
             local bubble_fg = game.assets:get_palette_color(self.theme.quote_bubble_text, { 0.05, 0.06, 0.08, 1 })
@@ -262,7 +318,7 @@ return function(game)
                 "fill",
                 bubble_x + bubble_w, tail_y - 4,
                 bubble_x + bubble_w, tail_y + 4,
-                width - 44, head_center_y
+                head_anchor_x, head_center_y
             )
             love.graphics.setColor(bubble_fg)
             love.graphics.rectangle("line", bubble_x + 0.5, bubble_y + 0.5, bubble_w - 1, bubble_h - 1, 4, 4)
@@ -270,7 +326,7 @@ return function(game)
                 "line",
                 bubble_x + bubble_w, tail_y - 4,
                 bubble_x + bubble_w, tail_y + 4,
-                width - 44, head_center_y
+                head_anchor_x, head_center_y
             )
             love.graphics.printf(quote, bubble_x + 5, bubble_y + 4, bubble_w - 10, "left")
         end

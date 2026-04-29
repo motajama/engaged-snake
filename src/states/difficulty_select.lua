@@ -30,7 +30,7 @@ return function(game)
         game.settings.values.difficulty = difficulty_id
         game.settings:save_now()
         game:start_new_run()
-        game.audio:play_sfx(game.dataset.sfx.menu_confirm or "menu_confirm")
+        game.audio:play_sfx(game:get_sfx_id("menu_confirm", "menu_confirm"))
         game.state_machine:change("story")
     end
 
@@ -42,13 +42,13 @@ return function(game)
             if self.selected < 1 then
                 self.selected = #self.items
             end
-            game.audio:play_sfx(game.dataset.sfx.menu_move or "menu_move")
+            game.audio:play_sfx(game:get_sfx_id("menu_move", "menu_move"))
         elseif direction == "down" then
             self.selected = self.selected + 1
             if self.selected > #self.items then
                 self.selected = 1
             end
-            game.audio:play_sfx(game.dataset.sfx.menu_move or "menu_move")
+            game.audio:play_sfx(game:get_sfx_id("menu_move", "menu_move"))
         end
 
         if game.input:confirm_pressed() then

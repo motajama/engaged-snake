@@ -11,17 +11,19 @@ function HUDQuotes.new()
         last_quote_index = nil,
         frame_timer = 0,
         frame = 1,
+        frame_count = 1,
         speaking = false,
     }, HUDQuotes)
 end
 
-function HUDQuotes:reset(level, localization)
+function HUDQuotes:reset(level, localization, frame_count)
     self.level = level or {}
     self.localization = localization
     self.timer = 0
     self.quote_timer = 0
     self.frame_timer = 0
     self.frame = 1
+    self.frame_count = math.max(1, frame_count or 1)
     self.speaking = false
     self.active_text = nil
     self.next_quote_delay = love.math.random(8, 12)
@@ -54,7 +56,7 @@ function HUDQuotes:update(dt)
             self.frame_timer = self.frame_timer + dt
             if self.frame_timer >= 0.18 then
                 self.frame_timer = self.frame_timer - 0.18
-                self.frame = self.frame % 4 + 1
+                self.frame = self.frame % self.frame_count + 1
             end
         else
             self.frame = 1
