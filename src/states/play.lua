@@ -31,9 +31,24 @@ return function(game)
         game.session.score = math.max(0, game.session.score - 25)
     end
 
+    local function get_food_def(kind)
+        local level = state.level or {}
+        local dataset_foods = game.dataset.foods or {}
+        local level_food_id = kind == "good" and level.good_food_type or level.bad_food_type
+        local fallback_id = kind
+        return dataset_foods[level_food_id] or dataset_foods[fallback_id] or {
+            id = fallback_id,
+            name_key = kind == "good" and "food_good_name" or "food_bad_name",
+            kind = kind,
+        }
+    end
+
     function state:enter()
         self.level = Levels.get_level(game.dataset, game.session.level_index)
         self.difficulty = game:get_difficulty_profile(game.settings.values.difficulty)
+        self.theme = self.level.theme or {}
+        self.good_food_def = get_food_def("good")
+        self.bad_food_def = get_food_def("bad")
         self.snake = Snake.new(5, 5)
         self.food_counts = {
             good_count = math.max(1, math.floor(self.level.good_count * (self.difficulty.good_food_multiplier or 1) + 0.5)),
@@ -154,13 +169,17 @@ return function(game)
     end
 
     function state:draw_grid()
-        love.graphics.setColor(0.12, 0.18, 0.14, 1)
+        local border = game.assets:get_palette_color(self.theme.grid_border, { 0.12, 0.18, 0.14, 1 })
+        local grid_a = game.assets:get_palette_color(self.theme.grid_a, { 0.06, 0.20, 0.08, 0.88 })
+        local grid_b = game.assets:get_palette_color(self.theme.grid_b, { 0.06, 0.23, 0.08, 0.88 })
+        grid_a[4] = 0.78
+        grid_b[4] = 0.78
+        love.graphics.setColor(border)
         love.graphics.rectangle("fill", self.grid.x - 2, self.grid.y - 2, self.level.grid_width * self.grid.cell + 4, self.level.grid_height * self.grid.cell + 4)
 
         for y = 0, self.level.grid_height - 1 do
             for x = 0, self.level.grid_width - 1 do
-                local tone = ((x + y) % 2 == 0) and 0.2 or 0.23
-                love.graphics.setColor(0.06, tone, 0.08, 1)
+                love.graphics.setColor(((x + y) % 2 == 0) and grid_a or grid_b)
                 love.graphics.rectangle("fill", self.grid.x + x * self.grid.cell, self.grid.y + y * self.grid.cell, self.grid.cell, self.grid.cell)
             end
         end
@@ -168,7 +187,8 @@ return function(game)
 
     function state:draw_foods()
         for _, food in ipairs(self.foods) do
-            local image = food.kind == "good" and game.assets:get_image("good_food") or game.assets:get_image("bad_food")
+            local def = food.kind == "good" and self.good_food_def or self.bad_food_def
+            local image = game.assets:get_food_icon(def.id, food.kind)
             local scale = self.grid.cell / 8
             local offset = (self.grid.cell - 8 * scale) * 0.5
             love.graphics.setColor(1, 1, 1, 1)
@@ -199,39 +219,80 @@ return function(game)
         local width = game.renderer.logical_width
         local quote = self.quotes:get_text()
         local head_frame = self.quotes:is_speaking() and self.quotes:get_frame() or 1
-        love.graphics.setColor(0.03, 0.07, 0.11, 0.78)
+        local good_name = game.localization:get(self.good_food_def.name_key)
+        local bad_name = game.localization:get(self.bad_food_def.name_key)
+        local hud_bg = game.assets:get_palette_color(self.theme.hud_bg, { 0.03, 0.07, 0.11, 0.78 })
+        local hud_line = game.assets:get_palette_color(self.theme.hud_line, { 0.55, 0.75, 0.9, 0.6 })
+        local hud_text = game.assets:get_palette_color(self.theme.hud_text, { 0.95, 0.98, 1, 1 })
+        love.graphics.setColor(hud_bg)
         love.graphics.rectangle("fill", 0, 0, width, self.hud_height)
-        love.graphics.setColor(0.55, 0.75, 0.9, 0.6)
+        love.graphics.setColor(hud_line)
         love.graphics.line(0, self.hud_height, width, self.hud_height)
-        love.graphics.setColor(0.95, 0.98, 1, 1)
+        love.graphics.setColor(hud_text)
         love.graphics.print(game.localization:get(self.level.name_key), 8, 5)
         love.graphics.print(game.localization:get("hud_score", { score = game.session.score }), 8, 15)
-        love.graphics.print(game.localization:get("hud_lives", { lives = game.session.lives }), 112, 5)
+        love.graphics.print(game.localization:get("hud_lives", { lives = game.session.lives }), 98, 5)
         love.graphics.print(game.localization:get("hud_goal", {
             current = game.session.level_stats.good_collected,
             total = self.goal_good,
-        }), 112, 15)
+        }), 98, 15)
+
+        love.graphics.setColor(1, 1, 1, 1)
+        love.graphics.draw(game.assets:get_food_icon(self.good_food_def.id, "good"), 182, 4)
+        love.graphics.draw(game.assets:get_food_icon(self.bad_food_def.id, "bad"), 182, 15)
+        love.graphics.setFont(game.assets:get_font("small"))
+        love.graphics.printf(good_name, 194, 4, 62, "left")
+        love.graphics.printf(bad_name, 194, 15, 62, "left")
 
         love.graphics.setColor(1, 1, 1, 1)
         love.graphics.draw(game.assets:get_image("head"), game.assets:get_head_quad(head_frame), width - 34, 4, 0, 0.36, 0.36)
 
         if quote then
-            love.graphics.setColor(0.08, 0.1, 0.14, 0.84)
-            love.graphics.rectangle("fill", width - 142, 2, 92, 28)
-            love.graphics.setColor(0.92, 0.96, 1, 0.95)
-            love.graphics.rectangle("line", width - 142, 2, 92, 28)
-            love.graphics.setColor(0.95, 0.98, 1, 1)
-            love.graphics.printf(quote, width - 138, 5, 84, "left")
+            local bubble_x = width - 148
+            local bubble_y = 2
+            local bubble_w = 98
+            local bubble_h = 28
+            local head_center_y = 4 + math.floor((64 * 0.36) * 0.5)
+            local tail_y = math.max(bubble_y + 6, math.min(bubble_y + bubble_h - 6, head_center_y))
+            local bubble_bg = game.assets:get_palette_color(self.theme.quote_bubble_bg, { 1, 1, 1, 1 })
+            local bubble_fg = game.assets:get_palette_color(self.theme.quote_bubble_text, { 0.05, 0.06, 0.08, 1 })
+            love.graphics.setColor(bubble_bg)
+            love.graphics.rectangle("fill", bubble_x, bubble_y, bubble_w, bubble_h, 4, 4)
+            love.graphics.polygon(
+                "fill",
+                bubble_x + bubble_w, tail_y - 4,
+                bubble_x + bubble_w, tail_y + 4,
+                width - 44, head_center_y
+            )
+            love.graphics.setColor(bubble_fg)
+            love.graphics.rectangle("line", bubble_x + 0.5, bubble_y + 0.5, bubble_w - 1, bubble_h - 1, 4, 4)
+            love.graphics.polygon(
+                "line",
+                bubble_x + bubble_w, tail_y - 4,
+                bubble_x + bubble_w, tail_y + 4,
+                width - 44, head_center_y
+            )
+            love.graphics.printf(quote, bubble_x + 5, bubble_y + 4, bubble_w - 10, "left")
         end
     end
 
     function state:draw()
         local width = game.renderer.logical_width
         local height = game.renderer.logical_height
+        local background = game.assets:get_level_background(self.level.id)
+        local play_bg = game.assets:get_palette_color(self.theme.play_bg, { 0.04, 0.06, 0.09, 1 })
+        local play_panel = game.assets:get_palette_color(self.theme.play_panel, { 0.08, 0.12, 0.16, 1 })
+        play_panel[4] = 0.35
         self:update_layout()
-        love.graphics.setColor(0.04, 0.06, 0.09, 1)
+        love.graphics.setColor(play_bg)
         love.graphics.rectangle("fill", 0, 0, width, height)
-        love.graphics.setColor(0.08, 0.12, 0.16, 1)
+        if background then
+            love.graphics.setColor(1, 1, 1, 1)
+            local sx = width / background:getWidth()
+            local sy = height / background:getHeight()
+            love.graphics.draw(background, 0, 0, 0, sx, sy)
+        end
+        love.graphics.setColor(play_panel)
         love.graphics.rectangle("fill", 0, self.hud_height, width, height - self.hud_height)
         self:draw_grid()
         self:draw_foods()

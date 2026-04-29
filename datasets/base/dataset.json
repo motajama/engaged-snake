@@ -1,6 +1,24 @@
 {
   "title": "ENGAGED SNAKE",
   "subtitle": "DATA-DRIVEN LOVE2D SLICE",
+  "ui_fonts": {
+    "small": {
+      "size": 8,
+      "hinting": "mono"
+    },
+    "medium": {
+      "size": 12,
+      "hinting": "mono"
+    },
+    "large": {
+      "size": 16,
+      "hinting": "mono"
+    },
+    "title": {
+      "size": 24,
+      "hinting": "mono"
+    }
+  },
   "languages": ["en", "cs"],
   "title_screen": "images/title.png",
   "intro": {
@@ -83,17 +101,33 @@
     }
   },
   "foods": {
-    "good": {
-      "id": "good",
+    "signal_fruit": {
+      "id": "signal_fruit",
       "name_key": "food_good_name",
       "description_key": "food_good_description",
-      "icon": "images/good_food.png"
+      "icon": "images/good_food.png",
+      "kind": "good"
     },
-    "bad": {
-      "id": "bad",
+    "static_node": {
+      "id": "static_node",
       "name_key": "food_bad_name",
       "description_key": "food_bad_description",
-      "icon": "images/bad_food.png"
+      "icon": "images/bad_food.png",
+      "kind": "bad"
+    },
+    "relay_orb": {
+      "id": "relay_orb",
+      "name_key": "food_relay_orb_name",
+      "description_key": "food_relay_orb_description",
+      "icon": "images/relay_orb.png",
+      "kind": "good"
+    },
+    "glitch_mine": {
+      "id": "glitch_mine",
+      "name_key": "food_glitch_mine_name",
+      "description_key": "food_glitch_mine_description",
+      "icon": "images/glitch_mine.png",
+      "kind": "bad"
     }
   },
   "characters": {
@@ -113,6 +147,25 @@
       "story_key": "level_1_story",
       "background": "images/levels/level_1.png",
       "music": "level_theme_1",
+      "good_food_type": "signal_fruit",
+      "bad_food_type": "static_node",
+      "theme": {
+        "play_bg": "#06121a",
+        "play_bg_accent": "#123349",
+        "play_panel": "#0a1d29",
+        "grid_border": "#17394a",
+        "grid_a": "#0d2f21",
+        "grid_b": "#13402b",
+        "hud_bg": "#07131d",
+        "hud_line": "#5ba0c8",
+        "hud_text": "#eef7ff",
+        "quote_bubble_bg": "#ffffff",
+        "quote_bubble_text": "#0c1216",
+        "stats_bg": "#120807",
+        "stats_panel": "#2b0d08",
+        "stats_accent": "#f0a13a",
+        "stats_text": "#f6e7cf"
+      },
       "grid_width": 14,
       "grid_height": 12,
       "good_count": 7,
@@ -131,6 +184,25 @@
       "story_key": "level_2_story",
       "background": "images/levels/level_2.png",
       "music": "level_theme_1",
+      "good_food_type": "relay_orb",
+      "bad_food_type": "glitch_mine",
+      "theme": {
+        "play_bg": "#0b0918",
+        "play_bg_accent": "#2c1d4d",
+        "play_panel": "#141126",
+        "grid_border": "#3d2f67",
+        "grid_a": "#1a1738",
+        "grid_b": "#201d45",
+        "hud_bg": "#0e0d20",
+        "hud_line": "#9d8cff",
+        "hud_text": "#f5f1ff",
+        "quote_bubble_bg": "#ffffff",
+        "quote_bubble_text": "#11101b",
+        "stats_bg": "#0d0914",
+        "stats_panel": "#211230",
+        "stats_accent": "#c69cff",
+        "stats_text": "#f0e5ff"
+      },
       "grid_width": 16,
       "grid_height": 12,
       "good_count": 9,

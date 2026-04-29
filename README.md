@@ -5,8 +5,10 @@
 ## Features
 
 - Logical game space `320x240`, default window `640x480`, nearest-neighbor scaling
-- Dataset-driven title, difficulty model, levels, HUD quotes, food metadata, and localization
-- Dataset-driven title, subtitle, and non-gameplay screen images
+- Dataset-driven title, subtitle, gameplay tuning, levels, HUD quotes, food metadata, colors, and localization
+- Dataset-driven title screen plus intro, game-over, and victory screen images/text keys
+- Per-level backgrounds, per-level food types, and per-level color themes
+- Dataset-configurable UI fonts with safe fallback to built-in fonts
 - `cs` and `en` localization loaded from JSON
 - Keyboard, mouse, touch, and configurable virtual controls
 - Wolf3D-style text-pointer main menu and difficulty selection
@@ -67,7 +69,16 @@ This runs `luac -p` over the Lua sources.
 
 ## Dataset Authoring
 
-See [DATASET.md](/home/motajama/Code/engaged-snake/DATASET.md) for the dataset format, required JSON fields, localization workflow, and asset rules.
+See [DATASET.md](/home/motajama/Code/engaged-snake/DATASET.md) for the dataset format, required JSON fields, localization workflow, theming, fonts, and asset rules.
+
+## Web Export
+
+See [WEB.md](/home/motajama/Code/engaged-snake/WEB.md) for a step-by-step guide to:
+
+- build a `.love` package
+- export the game for the browser with `love.js`-style tooling
+- host it as a standalone webpage
+- embed it into an existing website
 
 ## Notes
 

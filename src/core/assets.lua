@@ -10,10 +10,19 @@ local function rgb(hex)
     }
 end
 
+local function color_from_value(value, fallback)
+    if type(value) == "string" and value:sub(1, 1) == "#" and #value == 7 then
+        return rgb(value)
+    end
+    return fallback
+end
+
 function Assets.new(renderer)
     return setmetatable({
         renderer = renderer,
         images = {},
+        food_icons = {},
+        level_backgrounds = {},
         quads = {},
         fonts = {},
         palette = {
@@ -49,12 +58,32 @@ local function load_image_or_placeholder(path, fallback)
     return fallback()
 end
 
+local function load_font_slot(slot, fallback_size)
+    local size = slot and slot.size or fallback_size
+    local hinting = slot and slot.hinting or "mono"
+
+    if slot and slot.path then
+        local font_path = "datasets/base/" .. slot.path
+        if love.filesystem.getInfo(font_path) then
+            local ok, font = pcall(love.graphics.newFont, font_path, size, hinting)
+            if ok and font then
+                return font
+            end
+        end
+    end
+
+    return love.graphics.newFont(size, hinting)
+end
+
 function Assets:load(dataset)
     self.dataset = dataset
-    self.fonts.small = love.graphics.newFont(8, "mono")
-    self.fonts.medium = love.graphics.newFont(12, "mono")
-    self.fonts.large = love.graphics.newFont(16, "mono")
-    self.fonts.title = love.graphics.newFont(24, "mono")
+    self.food_icons = {}
+    self.level_backgrounds = {}
+    local font_config = dataset.ui_fonts or {}
+    self.fonts.small = load_font_slot(font_config.small, 8)
+    self.fonts.medium = load_font_slot(font_config.medium, 12)
+    self.fonts.large = load_font_slot(font_config.large, 16)
+    self.fonts.title = load_font_slot(font_config.title, 24)
 
     local width = self.renderer.logical_width
     local height = self.renderer.logical_height
@@ -63,7 +92,7 @@ function Assets:load(dataset)
         return load_image_or_placeholder(screen and screen.image and ("datasets/base/" .. screen.image), function()
             return make_canvas(width, height, function()
                 love.graphics.clear(base_color[1], base_color[2], base_color[3], 1)
-                love.graphics.setColor(accent_color)
+                love.graphics.setColor(accent_color[1], accent_color[2], accent_color[3], accent_color[4] or 1)
                 for i = 0, math.floor(width / 24) do
                     love.graphics.rectangle("fill", i * 24, height - 42 + (i % 2) * 4, 18, 42)
                 end
@@ -166,6 +195,36 @@ function Assets:load(dataset)
         love.graphics.line(1, 1, 6, 6)
         love.graphics.line(6, 1, 1, 6)
     end)
+
+    for id, food in pairs(dataset.foods or {}) do
+        self.food_icons[id] = load_image_or_placeholder(food.icon and ("datasets/base/" .. food.icon), function()
+            if food.kind == "bad" or id == "bad" or id:find("bad") then
+                return self.images.bad_food
+            end
+            return self.images.good_food
+        end)
+    end
+
+    for _, level in ipairs(dataset.levels or {}) do
+        local level_theme = level.theme or {}
+        local bg_a = color_from_value(level_theme.play_bg, { 0.08, 0.12, 0.16, 1 })
+        local bg_b = color_from_value(level_theme.play_bg_accent, { 0.12, 0.18, 0.24, 1 })
+        self.level_backgrounds[level.id] = load_image_or_placeholder(level.background and ("datasets/base/" .. level.background), function()
+            return make_canvas(width, height, function()
+                love.graphics.clear(bg_a[1], bg_a[2], bg_a[3], 1)
+                love.graphics.setColor(bg_b)
+                for y = 0, math.floor(height / 20) do
+                    for x = 0, math.floor(width / 20) do
+                        if (x + y) % 2 == 0 then
+                            love.graphics.rectangle("fill", x * 20, y * 20, 12, 12)
+                        else
+                            love.graphics.rectangle("fill", x * 20 + 8, y * 20 + 8, 8, 8)
+                        end
+                    end
+                end
+            end)
+        end)
+    end
 end
 
 function Assets:get_font(name)
@@ -182,6 +241,24 @@ end
 
 function Assets:get_difficulty_face(index)
     return self.images.difficulty_faces, self.quads.difficulty_faces[(index or 0) + 1] or self.quads.difficulty_faces[1]
+end
+
+function Assets:get_food_icon(food_id, fallback_kind)
+    if food_id and self.food_icons[food_id] then
+        return self.food_icons[food_id]
+    end
+    if fallback_kind == "bad" then
+        return self.images.bad_food
+    end
+    return self.images.good_food
+end
+
+function Assets:get_level_background(level_id)
+    return self.level_backgrounds[level_id]
+end
+
+function Assets:get_palette_color(value, fallback)
+    return color_from_value(value, fallback)
 end
 
 return Assets
