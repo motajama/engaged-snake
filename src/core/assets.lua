@@ -59,6 +59,18 @@ function Assets:load(dataset)
     local width = self.renderer.logical_width
     local height = self.renderer.logical_height
 
+    local function make_screen_placeholder(screen, base_color, accent_color)
+        return load_image_or_placeholder(screen and screen.image and ("datasets/base/" .. screen.image), function()
+            return make_canvas(width, height, function()
+                love.graphics.clear(base_color[1], base_color[2], base_color[3], 1)
+                love.graphics.setColor(accent_color)
+                for i = 0, math.floor(width / 24) do
+                    love.graphics.rectangle("fill", i * 24, height - 42 + (i % 2) * 4, 18, 42)
+                end
+            end)
+        end)
+    end
+
     self.images.title = load_image_or_placeholder(dataset.title_screen and ("datasets/base/" .. dataset.title_screen), function()
         return make_canvas(width, height, function()
         love.graphics.clear(0.08, 0.1, 0.14, 1)
@@ -76,9 +88,13 @@ function Assets:load(dataset)
         love.graphics.setFont(self.fonts.title)
         love.graphics.printf(dataset.title or "ENGAGED SNAKE", 0, 38, width, "center")
         love.graphics.setFont(self.fonts.medium)
-        love.graphics.printf("DATA-DRIVEN LOVE2D SLICE", 0, 68, width, "center")
+        love.graphics.printf(dataset.subtitle or "", 0, 68, width, "center")
         end)
     end)
+
+    self.images.intro = make_screen_placeholder(dataset.intro, { 0.09, 0.08, 0.16 }, { 0.24, 0.17, 0.3, 1 })
+    self.images.game_over = make_screen_placeholder(dataset.game_over, { 0.12, 0.02, 0.04 }, { 0.36, 0.08, 0.08, 1 })
+    self.images.victory = make_screen_placeholder(dataset.victory, { 0.06, 0.12, 0.08 }, { 0.16, 0.28, 0.14, 1 })
 
     local guide = dataset.characters and dataset.characters.guide or {}
     local guide_frame_w = guide.frame_width or 64

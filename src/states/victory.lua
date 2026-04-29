@@ -22,15 +22,23 @@ return function(game)
     function state:draw()
         local width = game.renderer.logical_width
         local height = game.renderer.logical_height
-        love.graphics.setColor(0.06, 0.12, 0.08, 1)
+        love.graphics.setColor(1, 1, 1, 1)
+        love.graphics.draw(game.assets:get_image("victory"), 0, 0)
+        love.graphics.setColor(0.04, 0.08, 0.05, 0.36)
         love.graphics.rectangle("fill", 0, 0, width, height)
         love.graphics.setFont(game.assets:get_font("title"))
         love.graphics.setColor(0.97, 0.96, 0.7, 1)
-        love.graphics.printf(game.localization:get("victory_title"), 0, 70, width, "center")
+        love.graphics.printf(game.localization:get((game.dataset.victory and game.dataset.victory.title_key) or "victory_title"), 0, 70, width, "center")
         love.graphics.setFont(game.assets:get_font("medium"))
-        love.graphics.printf(game.localization:get("victory_body", { score = game.session.score }), 42, 122, width - 84, "center")
+        love.graphics.printf(
+            game.localization:get((game.dataset.victory and game.dataset.victory.body_key) or "victory_body", { score = game.session.score }),
+            42,
+            122,
+            width - 84,
+            "center"
+        )
         love.graphics.setFont(game.assets:get_font("small"))
-        love.graphics.printf(game.localization:get("continue_hint"), 0, height - 28, width, "center")
+        love.graphics.printf(game.localization:get((game.dataset.victory and game.dataset.victory.hint_key) or "continue_hint"), 0, height - 28, width, "center")
     end
 
     return state

@@ -1,16 +1,19 @@
 # engaged-snake
 
-`engaged-snake` is a small data-driven Love2D/LÖVE 11.x snake game built to stay compatible with desktop and browser export workflows such as `love.js`.
+`engaged-snake` is a data-driven Love2D / LÖVE 11.x snake game built so the engine and the content pack can evolve separately. The current version includes a playable vertical slice, Wolf3D-style menu and stats presentation, localized story content, mobile touch controls, and safe placeholder assets when files are missing.
 
 ## Features
 
-- Internal resolution `256x144` scaled with nearest-neighbor filtering
-- Dataset-driven title, story, levels, food metadata, and localization
+- Logical game space `320x240`, default window `640x480`, nearest-neighbor scaling
+- Dataset-driven title, difficulty model, levels, HUD quotes, food metadata, and localization
+- Dataset-driven title, subtitle, and non-gameplay screen images
 - `cs` and `en` localization loaded from JSON
-- Keyboard, mouse, touch, and virtual D-pad input
+- Keyboard, mouse, touch, and configurable virtual controls
+- Wolf3D-style text-pointer main menu and difficulty selection
+- Animated end-of-level stats screen with generated SFX fallbacks
 - Save/load for settings and highscores through `love.filesystem`
 - Color and monochrome CRT video modes
-- Placeholder-generated visuals so the project runs without external assets
+- Browser-export-friendly Lua without external LuaRocks dependencies
 
 ## Run
 
@@ -18,26 +21,56 @@
 love .
 ```
 
-Or use:
+Or:
 
 ```sh
 make run
 ```
+
+## Checks
+
+```sh
+make check
+```
+
+This runs `luac -p` over the Lua sources.
 
 ## Controls
 
 - Move: arrow keys or `WASD`
 - Confirm: `Enter` or `Space`
 - Back: `Escape`
-- Mouse/touch: menus, story skip, and gameplay virtual D-pad
+- Mouse/touch: menu selection, story skip, stats continue
+- Touch gameplay controls:
+  auto-hidden on desktop by default
+  enabled automatically on Android/iOS
+  can be forced `ON` or `OFF` in Settings
+
+## Game Flow
+
+1. Boot
+2. Intro
+3. Main menu
+4. Difficulty selection
+5. Story screen
+6. Gameplay
+7. Animated level stats
+8. Next level or victory
 
 ## Project Layout
 
-- `src/core/`: engine services
-- `src/states/`: game states
-- `src/systems/`: gameplay and rendering systems
-- `datasets/base/`: replaceable content package
+- `src/core/`: engine services, save/settings/localization/renderer/audio
+- `src/states/`: state-machine screens and flows
+- `src/systems/`: gameplay systems and UI helpers
+- `src/util/`: small pure-Lua helpers
+- `datasets/base/`: replaceable content pack
+
+## Dataset Authoring
+
+See [DATASET.md](/home/motajama/Code/engaged-snake/DATASET.md) for the dataset format, required JSON fields, localization workflow, and asset rules.
 
 ## Notes
 
-The current version is a vertical slice with one playable level and placeholder-generated art/audio hooks. New games can reuse the engine by replacing dataset JSON, localization, and asset files.
+- Missing PNGs and SFX should not crash the game; the engine falls back to generated placeholder visuals and generated tones.
+- New content should be added through the dataset and language JSON files whenever possible rather than by hardcoding strings in Lua.
+- The current sample dataset is intentionally small and serves as a reference pack.

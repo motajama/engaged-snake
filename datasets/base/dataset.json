@@ -1,18 +1,31 @@
 {
   "title": "ENGAGED SNAKE",
+  "subtitle": "DATA-DRIVEN LOVE2D SLICE",
   "languages": ["en", "cs"],
   "title_screen": "images/title.png",
   "intro": {
+    "image": "images/intro.png",
     "animation": "intro_placeholder",
-    "duration": 3
+    "duration": 3,
+    "title_key": "intro_title",
+    "body_key": "intro_body",
+    "skip_key": "intro_skip"
   },
   "game_over": {
+    "image": "images/game_over.png",
     "animation": "game_over_placeholder",
-    "duration": 3
+    "duration": 3,
+    "title_key": "game_over_title",
+    "body_key": "game_over_body",
+    "hint_key": "game_over_hint"
   },
   "victory": {
+    "image": "images/victory.png",
     "animation": "victory_placeholder",
-    "duration": 3
+    "duration": 3,
+    "title_key": "victory_title",
+    "body_key": "victory_body",
+    "hint_key": "continue_hint"
   },
   "music": {
     "menu": "menu_theme",
