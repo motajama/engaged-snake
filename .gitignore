@@ -1,18 +1,7 @@
-# LÖVE build artifacts
-*.love
 build/
 dist/
-
-# OS/editor
-.DS_Store
-Thumbs.db
-.vscode/
-.idea/
-
-# temporary
-*.tmp
-*.bak
+*.love
 *.swp
-
-# logs
-*.log
+*.swo
+.DS_Store
+thumbs.db

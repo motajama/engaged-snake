@@ -1,0 +1,73 @@
+local TableUtil = require("src.util.table")
+
+local Settings = {}
+Settings.__index = Settings
+
+Settings.defaults = {
+    music_enabled = true,
+    sfx_enabled = true,
+    difficulty = "normal",
+    video_mode = "color",
+    language = "en",
+}
+
+Settings.options = {
+    difficulty = { "easy", "normal", "hard" },
+    video_mode = { "color", "mono_crt" },
+    language = { "cs", "en" },
+}
+
+function Settings.new(save)
+    return setmetatable({
+        save = save,
+        values = TableUtil.deep_copy(Settings.defaults),
+    }, Settings)
+end
+
+function Settings:load()
+    local loaded = self.save:load_settings(Settings.defaults)
+    self.values = TableUtil.merge(Settings.defaults, loaded)
+end
+
+function Settings:save_now()
+    self.save:save_settings(self.values)
+end
+
+function Settings:toggle(key)
+    self.values[key] = not self.values[key]
+    self:save_now()
+end
+
+function Settings:cycle(key, direction)
+    local options = Settings.options[key]
+    local current = self.values[key]
+    local index = 1
+
+    for i, value in ipairs(options) do
+        if value == current then
+            index = i
+            break
+        end
+    end
+
+    index = index + direction
+    if index < 1 then
+        index = #options
+    elseif index > #options then
+        index = 1
+    end
+
+    self.values[key] = options[index]
+    self:save_now()
+end
+
+function Settings:get_starting_lives()
+    local map = {
+        easy = 5,
+        normal = 3,
+        hard = 2,
+    }
+    return map[self.values.difficulty] or 3
+end
+
+return Settings

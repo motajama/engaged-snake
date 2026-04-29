@@ -1,0 +1,63 @@
+{
+  "title": "ENGAGED SNAKE",
+  "languages": ["en", "cs"],
+  "title_screen": "images/title.png",
+  "intro": {
+    "animation": "intro_placeholder",
+    "duration": 3
+  },
+  "game_over": {
+    "animation": "game_over_placeholder",
+    "duration": 3
+  },
+  "victory": {
+    "animation": "victory_placeholder",
+    "duration": 3
+  },
+  "music": {
+    "menu": "menu_theme",
+    "level_1": "level_theme_1"
+  },
+  "sfx": {
+    "good_collect": "pickup_good",
+    "bad_hit": "pickup_bad"
+  },
+  "foods": {
+    "good": {
+      "id": "good",
+      "name_key": "food_good_name",
+      "description_key": "food_good_description",
+      "icon": "images/good_food.png"
+    },
+    "bad": {
+      "id": "bad",
+      "name_key": "food_bad_name",
+      "description_key": "food_bad_description",
+      "icon": "images/bad_food.png"
+    }
+  },
+  "characters": {
+    "guide": {
+      "name_key": "character_guide_name",
+      "sprite": "images/guide_head.png",
+      "frame_width": 64,
+      "frame_height": 64,
+      "frames": 4
+    }
+  },
+  "levels": [
+    {
+      "id": "level_1",
+      "name_key": "level_1_name",
+      "description_key": "level_1_description",
+      "story_key": "level_1_story",
+      "background": "images/levels/level_1.png",
+      "music": "level_theme_1",
+      "grid_width": 14,
+      "grid_height": 12,
+      "good_count": 7,
+      "bad_count": 4,
+      "goal_good": 7
+    }
+  ]
+}
