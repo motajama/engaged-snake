@@ -58,6 +58,19 @@
       "good_count": 7,
       "bad_count": 4,
       "goal_good": 7
+    },
+    {
+      "id": "level_2",
+      "name_key": "level_2_name",
+      "description_key": "level_2_description",
+      "story_key": "level_2_story",
+      "background": "images/levels/level_2.png",
+      "music": "level_theme_1",
+      "grid_width": 16,
+      "grid_height": 12,
+      "good_count": 9,
+      "bad_count": 6,
+      "goal_good": 9
     }
   ]
 }

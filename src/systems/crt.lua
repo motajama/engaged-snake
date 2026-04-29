@@ -21,7 +21,14 @@ vec4 effect(vec4 color, Image texture, vec2 texture_coords, vec2 screen_coords)
 
 function CRT.new(renderer)
     local shader = nil
-    if love.graphics.isSupported("shader") then
+    local supported = false
+
+    if love.graphics.getSupported then
+        local features = love.graphics.getSupported()
+        supported = features and features.shader
+    end
+
+    if supported and love.graphics.newShader then
         local ok, value = pcall(love.graphics.newShader, shader_source)
         if ok then
             shader = value

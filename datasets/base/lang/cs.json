@@ -50,5 +50,8 @@
   "character_guide_name": "Pruvodce",
   "level_1_name": "Treninkovy okruh",
   "level_1_description": "Sesbirej vsechny dobre pakety a vyhni se ruseni.",
-  "level_1_story": "Vitej v treninkovem okruhu. Sesbirej vsechno jasne signalni ovoce a stabilizuj prenos. Modre staticke uzly jsou poskozena data. Dotkni se jich a ztratis skore i jeden zivot."
+  "level_1_story": "Vitej v treninkovem okruhu. Sesbirej vsechno jasne signalni ovoce a stabilizuj prenos. Modre staticke uzly jsou poskozena data. Dotkni se jich a ztratis skore i jeden zivot.",
+  "level_2_name": "Tunel rele",
+  "level_2_description": "Vetsi pole se silnejsim rusenim.",
+  "level_2_story": "Prvni kanal je stabilni. Ted projdi tunelem rele, kde proudi vic poskozenych uzlu. Mrizka je sirsi, sum je hustejsi a prenos se vycisti az tehdy, kdyz zajistis vsechny dobre pakety."
 }

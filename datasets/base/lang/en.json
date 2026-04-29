@@ -50,5 +50,8 @@
   "character_guide_name": "Guide",
   "level_1_name": "Training Circuit",
   "level_1_description": "Collect every good packet while avoiding static.",
-  "level_1_story": "Welcome to the training circuit. Collect every bright signal fruit to stabilize the feed. Blue static nodes are corrupted data. Touch them and you lose both score and one precious life."
+  "level_1_story": "Welcome to the training circuit. Collect every bright signal fruit to stabilize the feed. Blue static nodes are corrupted data. Touch them and you lose both score and one precious life.",
+  "level_2_name": "Relay Tunnel",
+  "level_2_description": "A larger field with heavier corruption.",
+  "level_2_story": "The first channel is stable. Now push through the relay tunnel, where more corrupted nodes drift through the stream. The grid is wider, the noise is denser, and the feed only clears when every good packet is secured."
 }
