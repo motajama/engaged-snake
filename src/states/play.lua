@@ -2,15 +2,21 @@ local Snake = require("src.systems.snake")
 local Food = require("src.systems.food")
 local Levels = require("src.systems.levels")
 local VirtualControls = require("src.systems.virtual_controls")
+local HUDQuotes = require("src.systems.hud_quotes")
 
 return function(game)
     local state = {
         level = nil,
+        difficulty = nil,
         snake = nil,
         foods = nil,
         controls = VirtualControls.new(),
+        quotes = HUDQuotes.new(),
         tick_timer = 0,
         tick_length = 0.17,
+        speed = 6,
+        speed_increment = 0.25,
+        goal_good = 0,
         hud_height = 32,
         grid = {
             x = 0,
@@ -27,14 +33,27 @@ return function(game)
 
     function state:enter()
         self.level = Levels.get_level(game.dataset, game.session.level_index)
+        self.difficulty = game:get_difficulty_profile(game.settings.values.difficulty)
         self.snake = Snake.new(5, 5)
-        self.foods = Food.spawn_set(self.level, self.snake)
+        self.food_counts = {
+            good_count = math.max(1, math.floor(self.level.good_count * (self.difficulty.good_food_multiplier or 1) + 0.5)),
+            bad_count = math.max(0, math.floor(self.level.bad_count * (self.difficulty.bad_food_multiplier or 1) + 0.5)),
+        }
+        self.goal_good = self.food_counts.good_count
+        self.foods = Food.spawn_set(self.level, self.snake, self.food_counts)
+        self.speed = self.difficulty.initial_speed or 6
+        self.speed_increment = self.difficulty.speed_increment or 0.25
+        self.tick_length = 1 / self.speed
         self.tick_timer = 0
         self:update_layout()
+        self.quotes:reset(self.level, game.localization)
         game.session.level_stats = {
             good_collected = 0,
             bad_hits = 0,
             time = 0,
+            level_name = game.localization:get(self.level.name_key),
+            score = 0,
+            bonus = 0,
         }
         game.audio:play_music(self.level.music)
     end
@@ -55,7 +74,9 @@ return function(game)
 
     function state:update(dt)
         game.session.level_stats.time = game.session.level_stats.time + dt
+        game.session.level_stats.score = game.session.score
         self.tick_timer = self.tick_timer + dt
+        self.quotes:update(dt)
 
         local direction = game.input:get_direction_pressed()
         if direction then
@@ -100,6 +121,8 @@ return function(game)
                         self.snake:grow(1)
                         game.session.score = game.session.score + 100
                         game.session.level_stats.good_collected = game.session.level_stats.good_collected + 1
+                        self.speed = self.speed + self.speed_increment
+                        self.tick_length = math.max(0.05, 1 / self.speed)
                         game.audio:play_sfx(game.dataset.sfx.good_collect)
                     else
                         self.snake:shrink(1)
@@ -115,8 +138,11 @@ return function(game)
                 return
             end
 
-            if game.session.level_stats.good_collected >= self.level.goal_good then
+            if game.session.level_stats.good_collected >= self.goal_good then
                 game.audio:stop_music()
+                game.session.level_stats.score = game.session.score
+                game.session.level_stats.bonus = math.max(0, math.floor(250 - game.session.level_stats.time * 8))
+                game.session.score = game.session.score + game.session.level_stats.bonus
                 game.state_machine:change("level_stats")
                 return
             end
@@ -171,6 +197,8 @@ return function(game)
     function state:draw_hud()
         love.graphics.setFont(game.assets:get_font("small"))
         local width = game.renderer.logical_width
+        local quote = self.quotes:get_text()
+        local head_frame = self.quotes:is_speaking() and self.quotes:get_frame() or 1
         love.graphics.setColor(0.03, 0.07, 0.11, 0.78)
         love.graphics.rectangle("fill", 0, 0, width, self.hud_height)
         love.graphics.setColor(0.55, 0.75, 0.9, 0.6)
@@ -181,8 +209,20 @@ return function(game)
         love.graphics.print(game.localization:get("hud_lives", { lives = game.session.lives }), 112, 5)
         love.graphics.print(game.localization:get("hud_goal", {
             current = game.session.level_stats.good_collected,
-            total = self.level.goal_good,
+            total = self.goal_good,
         }), 112, 15)
+
+        love.graphics.setColor(1, 1, 1, 1)
+        love.graphics.draw(game.assets:get_image("head"), game.assets:get_head_quad(head_frame), width - 34, 4, 0, 0.36, 0.36)
+
+        if quote then
+            love.graphics.setColor(0.08, 0.1, 0.14, 0.84)
+            love.graphics.rectangle("fill", width - 142, 2, 92, 28)
+            love.graphics.setColor(0.92, 0.96, 1, 0.95)
+            love.graphics.rectangle("line", width - 142, 2, 92, 28)
+            love.graphics.setColor(0.95, 0.98, 1, 1)
+            love.graphics.printf(quote, width - 138, 5, 84, "left")
+        end
     end
 
     function state:draw()

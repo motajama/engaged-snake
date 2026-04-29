@@ -47,6 +47,7 @@ function Game:register_states()
     self.state_factories.boot = require("src.states.boot")
     self.state_factories.intro = require("src.states.intro")
     self.state_factories.menu = require("src.states.menu")
+    self.state_factories.difficulty_select = require("src.states.difficulty_select")
     self.state_factories.settings_menu = require("src.states.settings_menu")
     self.state_factories.highscore = require("src.states.highscore")
     self.state_factories.story = require("src.states.story")
@@ -62,12 +63,32 @@ function Game:load()
 end
 
 function Game:start_new_run()
+    local difficulty = self:get_difficulty_profile(self.settings.values.difficulty)
     self.session = {
         level_index = 1,
         score = 0,
-        lives = self.settings:get_starting_lives(),
+        lives = difficulty.lives or self.settings:get_starting_lives(),
         level_stats = {},
     }
+end
+
+function Game:get_difficulty_profile(difficulty_id)
+    local difficulty_data = self.dataset and self.dataset.difficulty or {}
+    local fallback = difficulty_data.normal or {
+        label_key = "difficulty.normal",
+        lives = 3,
+        initial_speed = 6,
+        speed_increment = 0.25,
+        good_food_multiplier = 1.0,
+        bad_food_multiplier = 1.0,
+        face_index = 2,
+    }
+
+    local profile = difficulty_data[difficulty_id] or fallback
+    if not profile.label_key then
+        profile.label_key = fallback.label_key
+    end
+    return profile
 end
 
 function Game:is_mobile_device()

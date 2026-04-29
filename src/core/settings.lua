@@ -3,6 +3,12 @@ local TableUtil = require("src.util.table")
 local Settings = {}
 Settings.__index = Settings
 
+local legacy_difficulty_map = {
+    hard = "death",
+    normal = "normal",
+    easy = "easy",
+}
+
 Settings.defaults = {
     music_enabled = true,
     sfx_enabled = true,
@@ -14,7 +20,7 @@ Settings.defaults = {
 }
 
 Settings.options = {
-    difficulty = { "easy", "normal", "hard" },
+    difficulty = { "baby", "easy", "normal", "death" },
     video_mode = { "color", "mono_crt" },
     language = { "cs", "en" },
     control_layout = { "right_handed", "left_handed", "split" },
@@ -30,6 +36,9 @@ end
 
 function Settings:load()
     local loaded = self.save:load_settings(Settings.defaults)
+    if legacy_difficulty_map[loaded.difficulty] then
+        loaded.difficulty = legacy_difficulty_map[loaded.difficulty]
+    end
     self.values = TableUtil.merge(Settings.defaults, loaded)
 end
 
@@ -67,9 +76,10 @@ end
 
 function Settings:get_starting_lives()
     local map = {
-        easy = 5,
+        baby = 5,
+        easy = 4,
         normal = 3,
-        hard = 2,
+        death = 1,
     }
     return map[self.values.difficulty] or 3
 end

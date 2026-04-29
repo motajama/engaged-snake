@@ -12,10 +12,17 @@ return function(game)
         },
     }
 
+    local function row_y(index)
+        return 54 + (index - 1) * 22
+    end
+
     local function value_label(item)
         local value = game.settings.values[item.setting]
         if type(value) == "boolean" then
             return game.localization:get(value and "value_on" or "value_off")
+        end
+        if item.setting == "difficulty" then
+            return game.localization:get(game:get_difficulty_profile(value).label_key)
         end
         return game.localization:get("value_" .. tostring(value))
     end
@@ -55,7 +62,7 @@ return function(game)
         for _, tap in ipairs(game.input:get_taps()) do
             local width = game.renderer.logical_width
             for index, item in ipairs(self.items) do
-                local y = 64 + (index - 1) * 26
+                local y = row_y(index)
                 if tap.x >= 24 and tap.x <= width - 24 and tap.y >= y - 2 and tap.y <= y + 18 then
                     self.selected = index
                     activate(item, 1)
@@ -77,7 +84,7 @@ return function(game)
 
         love.graphics.setFont(game.assets:get_font("medium"))
         for index, item in ipairs(self.items) do
-            local y = 64 + (index - 1) * 26
+            local y = row_y(index)
             if index == self.selected then
                 love.graphics.setColor(0.97, 0.78, 0.28, 0.95)
                 love.graphics.rectangle("fill", 24, y - 2, width - 48, 20)
@@ -96,7 +103,7 @@ return function(game)
 
         love.graphics.setFont(game.assets:get_font("small"))
         love.graphics.setColor(1, 1, 1, 1)
-        love.graphics.printf(game.localization:get("settings_hint"), 24, height - 24, width - 48, "center")
+        love.graphics.printf(game.localization:get("settings_hint"), 24, height - 16, width - 48, "center")
     end
 
     return state
