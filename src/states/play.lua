@@ -11,9 +11,10 @@ return function(game)
         controls = VirtualControls.new(),
         tick_timer = 0,
         tick_length = 0.17,
+        hud_height = 32,
         grid = {
-            x = 96,
-            y = 24,
+            x = 0,
+            y = 0,
             cell = 8,
         },
     }
@@ -29,12 +30,27 @@ return function(game)
         self.snake = Snake.new(5, 5)
         self.foods = Food.spawn_set(self.level, self.snake)
         self.tick_timer = 0
+        self:update_layout()
         game.session.level_stats = {
             good_collected = 0,
             bad_hits = 0,
             time = 0,
         }
         game.audio:play_music(self.level.music)
+    end
+
+    function state:update_layout()
+        local width = game.renderer.logical_width
+        local height = game.renderer.logical_height
+        local usable_width = width - 12
+        local usable_height = height - self.hud_height - 12
+        local cell = math.floor(math.min(usable_width / self.level.grid_width, usable_height / self.level.grid_height))
+        self.grid.cell = math.max(8, cell)
+
+        local grid_width = self.level.grid_width * self.grid.cell
+        local grid_height = self.level.grid_height * self.grid.cell
+        self.grid.x = math.floor((width - grid_width) * 0.5)
+        self.grid.y = self.hud_height + math.floor((usable_height - grid_height) * 0.5) + 6
     end
 
     function state:update(dt)
@@ -47,9 +63,18 @@ return function(game)
         end
 
         for _, tap in ipairs(game.input:get_taps()) do
-            local touch_direction = self.controls:get_direction_at(tap.x, tap.y)
-            if touch_direction then
-                self.snake:set_direction(touch_direction)
+            if game:should_show_touch_controls() then
+                local touch_direction = self.controls:get_direction_at(
+                    tap.x,
+                    tap.y,
+                    game.renderer.logical_width,
+                    game.renderer.logical_height,
+                    self.hud_height,
+                    game.settings.values.control_layout
+                )
+                if touch_direction then
+                    self.snake:set_direction(touch_direction)
+                end
             end
         end
 
@@ -118,8 +143,17 @@ return function(game)
     function state:draw_foods()
         for _, food in ipairs(self.foods) do
             local image = food.kind == "good" and game.assets:get_image("good_food") or game.assets:get_image("bad_food")
+            local scale = self.grid.cell / 8
+            local offset = (self.grid.cell - 8 * scale) * 0.5
             love.graphics.setColor(1, 1, 1, 1)
-            love.graphics.draw(image, self.grid.x + food.x * self.grid.cell, self.grid.y + food.y * self.grid.cell)
+            love.graphics.draw(
+                image,
+                self.grid.x + food.x * self.grid.cell + offset,
+                self.grid.y + food.y * self.grid.cell + offset,
+                0,
+                scale,
+                scale
+            )
         end
     end
 
@@ -136,24 +170,36 @@ return function(game)
 
     function state:draw_hud()
         love.graphics.setFont(game.assets:get_font("small"))
-        love.graphics.setColor(1, 1, 1, 1)
-        love.graphics.print(game.localization:get(self.level.name_key), 8, 8)
-        love.graphics.print(game.localization:get("hud_score", { score = game.session.score }), 8, 18)
-        love.graphics.print(game.localization:get("hud_lives", { lives = game.session.lives }), 8, 28)
+        local width = game.renderer.logical_width
+        love.graphics.setColor(0.03, 0.07, 0.11, 0.78)
+        love.graphics.rectangle("fill", 0, 0, width, self.hud_height)
+        love.graphics.setColor(0.55, 0.75, 0.9, 0.6)
+        love.graphics.line(0, self.hud_height, width, self.hud_height)
+        love.graphics.setColor(0.95, 0.98, 1, 1)
+        love.graphics.print(game.localization:get(self.level.name_key), 8, 5)
+        love.graphics.print(game.localization:get("hud_score", { score = game.session.score }), 8, 15)
+        love.graphics.print(game.localization:get("hud_lives", { lives = game.session.lives }), 112, 5)
         love.graphics.print(game.localization:get("hud_goal", {
             current = game.session.level_stats.good_collected,
             total = self.level.goal_good,
-        }), 8, 38)
+        }), 112, 15)
     end
 
     function state:draw()
-        love.graphics.setColor(0.05, 0.06, 0.08, 1)
-        love.graphics.rectangle("fill", 0, 0, 256, 144)
+        local width = game.renderer.logical_width
+        local height = game.renderer.logical_height
+        self:update_layout()
+        love.graphics.setColor(0.04, 0.06, 0.09, 1)
+        love.graphics.rectangle("fill", 0, 0, width, height)
+        love.graphics.setColor(0.08, 0.12, 0.16, 1)
+        love.graphics.rectangle("fill", 0, self.hud_height, width, height - self.hud_height)
         self:draw_grid()
         self:draw_foods()
         self:draw_snake()
         self:draw_hud()
-        self.controls:draw(game.assets)
+        if game:should_show_touch_controls() then
+            self.controls:draw(game.assets, width, height, self.hud_height, game.settings.values.control_layout)
+        end
     end
 
     return state

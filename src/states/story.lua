@@ -35,24 +35,26 @@ return function(game)
     end
 
     function state:draw()
+        local width = game.renderer.logical_width
+        local height = game.renderer.logical_height
         love.graphics.setColor(0.07, 0.08, 0.12, 1)
-        love.graphics.rectangle("fill", 0, 0, 256, 144)
+        love.graphics.rectangle("fill", 0, 0, width, height)
 
         love.graphics.setColor(0.15, 0.18, 0.25, 1)
-        love.graphics.rectangle("fill", 8, 12, 80, 80)
+        love.graphics.rectangle("fill", 20, 24, 100, 100)
         love.graphics.setColor(1, 1, 1, 1)
-        love.graphics.draw(game.assets:get_image("head"), game.assets:get_head_quad(self.frame), 16, 20)
+        love.graphics.draw(game.assets:get_image("head"), game.assets:get_head_quad(self.frame), 38, 42, 0, 1.5, 1.5)
 
         love.graphics.setColor(0.12, 0.14, 0.2, 1)
-        love.graphics.rectangle("fill", 98, 12, 150, 100)
+        love.graphics.rectangle("fill", 136, 24, width - 156, 156)
         love.graphics.setColor(1, 1, 1, 1)
         love.graphics.setFont(game.assets:get_font("medium"))
-        love.graphics.printf(game.localization:get(self.level.name_key), 106, 18, 134, "left")
+        love.graphics.printf(game.localization:get(self.level.name_key), 148, 34, width - 180, "left")
         love.graphics.setFont(game.assets:get_font("small"))
-        love.graphics.printf(self.typewriter:get_text(), 106, 40, 134, "left")
+        love.graphics.printf(self.typewriter:get_text(), 148, 62, width - 180, "left")
 
         local footer_key = self.typewriter:is_done() and "story_continue" or "story_skip"
-        love.graphics.printf(game.localization:get(footer_key), 0, 126, 256, "center")
+        love.graphics.printf(game.localization:get(footer_key), 0, height - 24, width, "center")
     end
 
     return state

@@ -1,11 +1,16 @@
 local Renderer = {}
 Renderer.__index = Renderer
 
-function Renderer.new(base_width, base_height)
+function Renderer.new(logical_width, logical_height, internal_scale)
+    local base_width = logical_width * internal_scale
+    local base_height = logical_height * internal_scale
     local canvas = love.graphics.newCanvas(base_width, base_height)
     canvas:setFilter("nearest", "nearest")
 
     local self = setmetatable({
+        logical_width = logical_width,
+        logical_height = logical_height,
+        internal_scale = internal_scale,
         base_width = base_width,
         base_height = base_height,
         canvas = canvas,
@@ -39,13 +44,18 @@ function Renderer:resize(width, height)
 end
 
 function Renderer:screen_to_game(x, y)
-    return (x - self.offset_x) / self.scale, (y - self.offset_y) / self.scale
+    local render_x = (x - self.offset_x) / self.scale
+    local render_y = (y - self.offset_y) / self.scale
+    return render_x / self.internal_scale, render_y / self.internal_scale
 end
 
 function Renderer:draw_scene(draw_fn, post_fn)
     love.graphics.setCanvas(self.canvas)
     love.graphics.clear(0.04, 0.05, 0.08, 1)
+    love.graphics.push()
+    love.graphics.scale(self.internal_scale, self.internal_scale)
     draw_fn()
+    love.graphics.pop()
     love.graphics.setCanvas()
 
     love.graphics.clear(0, 0, 0, 1)

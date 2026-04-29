@@ -19,7 +19,13 @@ return function(game)
 
     function state:draw()
         love.graphics.setColor(1, 1, 1, 1)
-        love.graphics.printf("BOOTING...", 0, 68, 256, "center")
+        love.graphics.printf(
+            "BOOTING...",
+            0,
+            math.floor(game.renderer.logical_height * 0.48),
+            game.renderer.logical_width,
+            "center"
+        )
     end
 
     return state

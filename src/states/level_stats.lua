@@ -22,14 +22,16 @@ return function(game)
 
     function state:draw()
         local stats = game.session.level_stats
+        local width = game.renderer.logical_width
+        local height = game.renderer.logical_height
         love.graphics.setColor(0.05, 0.05, 0.09, 1)
-        love.graphics.rectangle("fill", 0, 0, 256, 144)
+        love.graphics.rectangle("fill", 0, 0, width, height)
         love.graphics.setColor(0.2, 0.7, 0.3, 1)
-        love.graphics.rectangle("fill", 10, 10, 236, 124)
+        love.graphics.rectangle("fill", 24, 24, width - 48, height - 48)
 
         love.graphics.setFont(game.assets:get_font("large"))
         love.graphics.setColor(0.02, 0.06, 0.02, 1)
-        love.graphics.printf(game.localization:get("stats_title"), 0, 18, 256, "center")
+        love.graphics.printf(game.localization:get("stats_title"), 0, 36, width, "center")
 
         love.graphics.setFont(game.assets:get_font("medium"))
         local lines = {
@@ -42,11 +44,11 @@ return function(game)
         }
 
         for index, line in ipairs(lines) do
-            love.graphics.printf(line, 28, 40 + (index - 1) * 12, 200, "left")
+            love.graphics.printf(line, 52, 72 + (index - 1) * 20, width - 104, "left")
         end
 
         love.graphics.setFont(game.assets:get_font("small"))
-        love.graphics.printf(game.localization:get("continue_hint"), 0, 118, 256, "center")
+        love.graphics.printf(game.localization:get("continue_hint"), 0, height - 34, width, "center")
     end
 
     return state

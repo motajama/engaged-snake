@@ -9,12 +9,16 @@ Settings.defaults = {
     difficulty = "normal",
     video_mode = "color",
     language = "en",
+    control_layout = "right_handed",
+    touch_controls = "auto",
 }
 
 Settings.options = {
     difficulty = { "easy", "normal", "hard" },
     video_mode = { "color", "mono_crt" },
     language = { "cs", "en" },
+    control_layout = { "right_handed", "left_handed", "split" },
+    touch_controls = { "auto", "on", "off" },
 }
 
 function Settings.new(save)

@@ -17,19 +17,21 @@ return function(game)
     end
 
     function state:draw()
+        local width = game.renderer.logical_width
+        local height = game.renderer.logical_height
         local progress = math.min(1, self.timer / self.duration)
         local pulse = 0.3 + 0.7 * progress
         love.graphics.setColor(0.09, 0.08 + pulse * 0.2, 0.16, 1)
-        love.graphics.rectangle("fill", 0, 0, 256, 144)
+        love.graphics.rectangle("fill", 0, 0, width, height)
 
         love.graphics.setColor(1, 0.9, 0.45, 1)
         love.graphics.setFont(game.assets:get_font("title"))
-        love.graphics.printf(game.localization:get("intro_title"), 0, 40, 256, "center")
+        love.graphics.printf(game.localization:get("intro_title"), 0, 72, width, "center")
         love.graphics.setFont(game.assets:get_font("medium"))
         love.graphics.setColor(0.85, 0.95, 1, 1)
-        love.graphics.printf(game.localization:get("intro_body"), 28, 74, 200, "center")
+        love.graphics.printf(game.localization:get("intro_body"), 42, 116, width - 84, "center")
         love.graphics.setColor(1, 1, 1, 1)
-        love.graphics.printf(game.localization:get("intro_skip"), 0, 124, 256, "center")
+        love.graphics.printf(game.localization:get("intro_skip"), 0, height - 24, width, "center")
     end
 
     return state

@@ -7,6 +7,8 @@ return function(game)
             { kind = "cycle", key = "settings_difficulty", setting = "difficulty" },
             { kind = "cycle", key = "settings_video", setting = "video_mode" },
             { kind = "cycle", key = "settings_language", setting = "language" },
+            { kind = "cycle", key = "settings_touch_controls", setting = "touch_controls" },
+            { kind = "cycle", key = "settings_controls", setting = "control_layout" },
         },
     }
 
@@ -51,9 +53,10 @@ return function(game)
         end
 
         for _, tap in ipairs(game.input:get_taps()) do
+            local width = game.renderer.logical_width
             for index, item in ipairs(self.items) do
-                local y = 30 + (index - 1) * 20
-                if tap.x >= 24 and tap.x <= 232 and tap.y >= y and tap.y <= y + 16 then
+                local y = 64 + (index - 1) * 26
+                if tap.x >= 24 and tap.x <= width - 24 and tap.y >= y - 2 and tap.y <= y + 18 then
                     self.selected = index
                     activate(item, 1)
                     return
@@ -63,33 +66,37 @@ return function(game)
     end
 
     function state:draw()
+        local width = game.renderer.logical_width
+        local height = game.renderer.logical_height
         love.graphics.setColor(0.08, 0.1, 0.15, 1)
-        love.graphics.rectangle("fill", 0, 0, 256, 144)
+        love.graphics.rectangle("fill", 0, 0, width, height)
 
         love.graphics.setFont(game.assets:get_font("large"))
         love.graphics.setColor(1, 1, 1, 1)
-        love.graphics.printf(game.localization:get("settings_title"), 0, 8, 256, "center")
+        love.graphics.printf(game.localization:get("settings_title"), 0, 20, width, "center")
 
         love.graphics.setFont(game.assets:get_font("medium"))
         for index, item in ipairs(self.items) do
-            local y = 30 + (index - 1) * 20
+            local y = 64 + (index - 1) * 26
             if index == self.selected then
                 love.graphics.setColor(0.97, 0.78, 0.28, 0.95)
-                love.graphics.rectangle("fill", 16, y - 2, 224, 18)
+                love.graphics.rectangle("fill", 24, y - 2, width - 48, 20)
                 love.graphics.setColor(0.06, 0.08, 0.12, 1)
             else
                 love.graphics.setColor(0.18, 0.22, 0.3, 0.95)
-                love.graphics.rectangle("fill", 16, y - 2, 224, 18)
+                love.graphics.rectangle("fill", 24, y - 2, width - 48, 20)
                 love.graphics.setColor(0.93, 0.96, 1, 1)
             end
 
-            love.graphics.print(game.localization:get(item.key), 24, y + 2)
-            love.graphics.printf(value_label(item), 120, y + 2, 108, "right")
+            love.graphics.print(game.localization:get(item.key), 36, y + 2)
+            love.graphics.setFont(game.assets:get_font("small"))
+            love.graphics.printf(value_label(item), width - 160, y + 4, 124, "right")
+            love.graphics.setFont(game.assets:get_font("medium"))
         end
 
         love.graphics.setFont(game.assets:get_font("small"))
         love.graphics.setColor(1, 1, 1, 1)
-        love.graphics.printf(game.localization:get("settings_hint"), 12, 126, 232, "center")
+        love.graphics.printf(game.localization:get("settings_hint"), 24, height - 24, width - 48, "center")
     end
 
     return state

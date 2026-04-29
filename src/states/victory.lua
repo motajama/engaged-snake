@@ -20,15 +20,17 @@ return function(game)
     end
 
     function state:draw()
+        local width = game.renderer.logical_width
+        local height = game.renderer.logical_height
         love.graphics.setColor(0.06, 0.12, 0.08, 1)
-        love.graphics.rectangle("fill", 0, 0, 256, 144)
+        love.graphics.rectangle("fill", 0, 0, width, height)
         love.graphics.setFont(game.assets:get_font("title"))
         love.graphics.setColor(0.97, 0.96, 0.7, 1)
-        love.graphics.printf(game.localization:get("victory_title"), 0, 34, 256, "center")
+        love.graphics.printf(game.localization:get("victory_title"), 0, 70, width, "center")
         love.graphics.setFont(game.assets:get_font("medium"))
-        love.graphics.printf(game.localization:get("victory_body", { score = game.session.score }), 18, 68, 220, "center")
+        love.graphics.printf(game.localization:get("victory_body", { score = game.session.score }), 42, 122, width - 84, "center")
         love.graphics.setFont(game.assets:get_font("small"))
-        love.graphics.printf(game.localization:get("continue_hint"), 0, 122, 256, "center")
+        love.graphics.printf(game.localization:get("continue_hint"), 0, height - 28, width, "center")
     end
 
     return state

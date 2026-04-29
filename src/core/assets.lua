@@ -42,26 +42,31 @@ end
 
 function Assets:load(dataset)
     self.dataset = dataset
-    self.fonts.small = love.graphics.newFont(8)
-    self.fonts.medium = love.graphics.newFont(12)
-    self.fonts.large = love.graphics.newFont(16)
-    self.fonts.title = love.graphics.newFont(24)
+    self.fonts.small = love.graphics.newFont(8, "mono")
+    self.fonts.medium = love.graphics.newFont(12, "mono")
+    self.fonts.large = love.graphics.newFont(16, "mono")
+    self.fonts.title = love.graphics.newFont(24, "mono")
 
-    self.images.title = make_canvas(256, 144, function()
+    local width = self.renderer.logical_width
+    local height = self.renderer.logical_height
+
+    self.images.title = make_canvas(width, height, function()
         love.graphics.clear(0.08, 0.1, 0.14, 1)
         love.graphics.setColor(rgb("#1d3557"))
-        love.graphics.rectangle("fill", 0, 0, 256, 144)
+        love.graphics.rectangle("fill", 0, 0, width, height)
         love.graphics.setColor(rgb("#457b9d"))
-        for i = 0, 15 do
-            love.graphics.rectangle("fill", i * 16, 96 + (i % 2) * 4, 16, 48)
+        local columns = math.floor(width / 20)
+        for i = 0, columns do
+            local x = i * 20
+            love.graphics.rectangle("fill", x, height - 48 + (i % 2) * 5, 20, 48)
         end
         love.graphics.setColor(rgb("#a8dadc"))
-        love.graphics.circle("fill", 220, 30, 12)
+        love.graphics.circle("fill", width - 34, 38, 16)
         love.graphics.setColor(rgb("#f1faee"))
         love.graphics.setFont(self.fonts.title)
-        love.graphics.printf(dataset.title or "ENGAGED SNAKE", 0, 24, 256, "center")
+        love.graphics.printf(dataset.title or "ENGAGED SNAKE", 0, 38, width, "center")
         love.graphics.setFont(self.fonts.medium)
-        love.graphics.printf("DATA-DRIVEN LOVE2D SLICE", 0, 54, 256, "center")
+        love.graphics.printf("DATA-DRIVEN LOVE2D SLICE", 0, 68, width, "center")
     end)
 
     self.images.head = make_canvas(256, 64, function()

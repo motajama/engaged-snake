@@ -9,11 +9,13 @@ return function(game)
     }
 
     local function item_rect(index)
+        local width = game.renderer.logical_width
+        local item_width = 128
         return {
-            x = 78,
-            y = 72 + (index - 1) * 18,
-            w = 100,
-            h = 14,
+            x = math.floor((width - item_width) * 0.5),
+            y = 116 + (index - 1) * 24,
+            w = item_width,
+            h = 18,
         }
     end
 
@@ -58,6 +60,8 @@ return function(game)
     end
 
     function state:draw()
+        local width = game.renderer.logical_width
+        local height = game.renderer.logical_height
         love.graphics.setColor(1, 1, 1, 1)
         love.graphics.draw(game.assets:get_image("title"), 0, 0)
 
@@ -74,12 +78,12 @@ return function(game)
                 love.graphics.rectangle("fill", rect.x, rect.y, rect.w, rect.h)
                 love.graphics.setColor(0.92, 0.96, 1, 1)
             end
-            love.graphics.printf(game.localization:get(item.key), rect.x, rect.y + 3, rect.w, "center")
+            love.graphics.printf(game.localization:get(item.key), rect.x, rect.y + 4, rect.w, "center")
         end
 
         love.graphics.setFont(game.assets:get_font("small"))
         love.graphics.setColor(1, 1, 1, 1)
-        love.graphics.printf(game.localization:get("menu_hint"), 0, 132, 256, "center")
+        love.graphics.printf(game.localization:get("menu_hint"), 0, height - 20, width, "center")
     end
 
     return state

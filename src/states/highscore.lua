@@ -8,26 +8,28 @@ return function(game)
     end
 
     function state:draw()
+        local width = game.renderer.logical_width
+        local height = game.renderer.logical_height
         love.graphics.setColor(0.08, 0.08, 0.12, 1)
-        love.graphics.rectangle("fill", 0, 0, 256, 144)
+        love.graphics.rectangle("fill", 0, 0, width, height)
 
         love.graphics.setFont(game.assets:get_font("large"))
         love.graphics.setColor(1, 1, 1, 1)
-        love.graphics.printf(game.localization:get("highscore_title"), 0, 10, 256, "center")
+        love.graphics.printf(game.localization:get("highscore_title"), 0, 18, width, "center")
 
         love.graphics.setFont(game.assets:get_font("medium"))
         if #game.highscores.entries == 0 then
-            love.graphics.printf(game.localization:get("highscore_empty"), 0, 66, 256, "center")
+            love.graphics.printf(game.localization:get("highscore_empty"), 0, 116, width, "center")
         else
             for index, entry in ipairs(game.highscores.entries) do
-                local y = 28 + index * 10
+                local y = 42 + index * 16
                 local line = string.format("%02d  %s  %05d", index, entry.name or "PLY", entry.score or 0)
-                love.graphics.printf(line, 28, y, 200, "left")
+                love.graphics.printf(line, 46, y, width - 92, "left")
             end
         end
 
         love.graphics.setFont(game.assets:get_font("small"))
-        love.graphics.printf(game.localization:get("back_hint"), 0, 130, 256, "center")
+        love.graphics.printf(game.localization:get("back_hint"), 0, height - 24, width, "center")
     end
 
     return state

@@ -7,12 +7,17 @@ local Save = require("src.core.save")
 local Localization = require("src.core.localization")
 local Settings = require("src.core.settings")
 local CRT = require("src.systems.crt")
+local Constants = require("src.core.constants")
 
 local Game = {}
 Game.__index = Game
 
 function Game.new()
-    local renderer = Renderer.new(256, 144)
+    local renderer = Renderer.new(
+        Constants.logical_width,
+        Constants.logical_height,
+        Constants.internal_scale
+    )
     local save = Save.new()
     local settings = Settings.new(save)
 
@@ -63,6 +68,25 @@ function Game:start_new_run()
         lives = self.settings:get_starting_lives(),
         level_stats = {},
     }
+end
+
+function Game:is_mobile_device()
+    if love.system and love.system.getOS then
+        local os_name = love.system.getOS()
+        return os_name == "Android" or os_name == "iOS"
+    end
+    return false
+end
+
+function Game:should_show_touch_controls()
+    local mode = self.settings.values.touch_controls
+    if mode == "on" then
+        return true
+    end
+    if mode == "off" then
+        return false
+    end
+    return self:is_mobile_device()
 end
 
 function Game:update(dt)
