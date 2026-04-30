@@ -2,6 +2,8 @@
 
 `engaged-snake` is a data-driven Love2D / LÖVE 11.x snake game built so the engine and the content pack can evolve separately. The current version includes a playable vertical slice, Wolf3D-style menu and stats presentation, localized story content, mobile touch controls, and safe placeholder assets when files are missing.
 
+Credit line: `design&concept->motajama coding->Codex @ GPL3 2026`
+
 ## Features
 
 - Logical game space `320x240`, default window `640x480`, nearest-neighbor scaling
@@ -15,6 +17,8 @@
 - Animated end-of-level stats screen with generated SFX fallbacks
 - Save/load for settings and highscores through `love.filesystem`
 - Optional online score upload through the PHP backend in `backend/`
+- Online high-score display with local fallback when the score server is unavailable
+- Embeddable JavaScript/CSS top-5 score widget for external pages
 - Color and monochrome CRT video modes
 - Browser-export-friendly Lua; optional online score upload needs LuaSocket/LuaSec in the LÖVE runtime
 
@@ -68,6 +72,7 @@ It also decodes the bundled dataset/localization JSON and runs the pure-Lua regr
 - `src/systems/`: gameplay systems and UI helpers
 - `src/util/`: small pure-Lua helpers
 - `datasets/base/`: replaceable content pack
+- `backend/`: optional PHP/MySQL score backend, public scoreboard, JSON endpoint, and embeddable widget
 
 ## Dataset Authoring
 
@@ -84,7 +89,13 @@ See [WEB.md](/home/motajama/Code/engaged-snake/WEB.md) for a step-by-step guide 
 
 ## Online Scores
 
-See [ONLINE_SCORES.md](/home/motajama/Code/engaged-snake/ONLINE_SCORES.md) for the MySQL schema, PHP backend setup, password-hash generation, LuaSocket/LuaSec runtime setup, client config, and public scoreboard page.
+See [ONLINE_SCORES.md](/home/motajama/Code/engaged-snake/ONLINE_SCORES.md) for the MySQL schema, PHP backend setup, password-hash generation, LuaSocket/LuaSec runtime setup, client config, public scoreboard page, and embeddable top-5 widget.
+
+## Credits And License
+
+`design&concept->motajama coding->Codex @ GPL3 2026`
+
+The project is distributed under GPL-3.0. See [LICENSE](/home/motajama/Code/engaged-snake/LICENSE).
 
 ## Notes
 

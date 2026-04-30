@@ -2,6 +2,8 @@
 
 This guide shows how to package `engaged-snake` for the browser and how to place it inside an existing webpage.
 
+Credit line for published builds: `design&concept->motajama coding->Codex @ GPL3 2026`
+
 The game code is already written to stay friendly to `love.js`-style browser export:
 
 - no LuaJIT FFI
@@ -41,6 +43,7 @@ Verify at least:
 - menus open correctly
 - difficulty selection works
 - gameplay starts
+- high-score screen shows the credit line at bottom right
 - touch UI can be forced `ON` in Settings
 - intro, stats, game-over, and victory screens render
 
@@ -91,6 +94,7 @@ After upload, test:
 - touch controls on phone/tablet
 - scaling clarity
 - save/load behavior in browser storage
+- high-score credit line remains visible and unobstructed
 - audio start after user interaction
 
 ## Option 2: Embed Into an Existing Website

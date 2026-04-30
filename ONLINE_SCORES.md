@@ -2,6 +2,8 @@
 
 The game can save scores locally and optionally upload them to a small PHP/MySQL backend.
 
+Credit line used by the in-game high-score screen: `design&concept->motajama coding->Codex @ GPL3 2026`
+
 ## Backend Setup
 
 1. Upload `backend/` to the PHP server.
@@ -132,6 +134,47 @@ If the score appears only in the in-game local high-score table, check that `sco
 ## Public Scoreboard
 
 Open `backend/index.php` in a browser. The page only shows scores. Design tokens, colors, and Google Fonts are in `backend/style.css`.
+
+## Embeddable Top-5 Widget
+
+Any page can show a small top-score widget by loading the widget CSS/JS and adding a target div:
+
+```html
+<link rel="stylesheet" href="https://your-server.example/engaged-snake/score-widget.css">
+
+<div
+  data-engagedsnake-score-widget
+  data-scores-url="https://your-server.example/engaged-snake/scores.php"
+  data-limit="5"
+  data-title="Engaged Snake Top 5">
+</div>
+
+<script src="https://your-server.example/engaged-snake/score-widget.js" defer></script>
+```
+
+Customize the design by overriding CSS variables on the target wrapper or a parent:
+
+```css
+[data-engagedsnake-score-widget] {
+  --esw-bg: #101820;
+  --esw-border: #f0c95a;
+  --esw-text: #ffffff;
+  --esw-accent: #f0c95a;
+  --esw-font: "Inter", system-ui, sans-serif;
+}
+```
+
+The widget reads from `scores.php?limit=5`, so it does not need the upload password.
+
+## Credits And License
+
+Use the same project credit line when publishing the score page or embedding the widget:
+
+```txt
+design&concept->motajama coding->Codex @ GPL3 2026
+```
+
+The project is distributed under GPL-3.0.
 
 ## Security Note
 

@@ -4,6 +4,8 @@ This project is built so you can create a different game by replacing the datase
 
 The active sample pack lives in `datasets/base/`.
 
+Project credit line: `design&concept->motajama coding->Codex @ GPL3 2026`
+
 ## Layout
 
 Minimum expected structure:
@@ -38,6 +40,7 @@ The engine currently loads localization from:
 - Use paths relative to `datasets/base/` inside `dataset.json`.
 - Missing images, fonts, and SFX are allowed; the engine should fall back safely.
 - Keep sprite sheets pixel-art friendly and export them without filtering.
+- Keep the project credit line visible in shipped builds unless the project identity is intentionally replaced in a fork.
 
 ## `dataset.json`
 

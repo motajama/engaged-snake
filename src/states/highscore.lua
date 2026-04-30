@@ -4,6 +4,7 @@ return function(game)
         source = "local",
         message_key = nil,
     }
+    local credit = "design&concept->motajama coding->Codex @ GPL3 2026"
 
     local function load_scores(state_ref)
         local ok, scores = game.online_scores:fetch_scores()
@@ -73,6 +74,8 @@ return function(game)
 
         love.graphics.setFont(game.assets:get_font("small"))
         love.graphics.printf(game.localization:get("back_hint"), 0, height - 24, width, "center")
+        love.graphics.setColor(0.48, 0.56, 0.64, 1)
+        love.graphics.printf(credit, width - 286, height - 11, 280, "right")
     end
 
     return state
