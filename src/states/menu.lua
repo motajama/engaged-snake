@@ -89,26 +89,26 @@ return function(game)
         local pointer_frame = math.floor(self.arrow_timer * 6) % 2 + 1
         love.graphics.setColor(1, 1, 1, 1)
         love.graphics.draw(game.assets:get_image("title"), 0, 0)
-        love.graphics.setColor(0.08, 0.03, 0.02, 0.85)
-        love.graphics.rectangle("fill", 40, 100, width - 80, 84)
-        love.graphics.setColor(0.74, 0.18, 0.06, 1)
-        love.graphics.rectangle("line", 44, 104, width - 88, 76)
 
         love.graphics.setFont(game.assets:get_font("medium"))
         for index, item in ipairs(self.items) do
             local rect = item_rect(index)
             local selected = index == self.selected
             if selected then
+                love.graphics.setColor(0.05, 0.03, 0.02, 0.85)
+                draw_pointer(rect.x - 17, rect.y + 4, pointer_frame)
                 love.graphics.setColor(0.98, 0.84, 0.35, 1)
                 draw_pointer(rect.x - 18, rect.y + 3, pointer_frame)
-                love.graphics.setColor(0.98, 0.9, 0.58, 1)
-            else
-                love.graphics.setColor(0.9, 0.9, 0.86, 1)
             end
+            love.graphics.setColor(0.04, 0.03, 0.02, 0.9)
+            love.graphics.print(game.localization:get(item.key), rect.x + 1, rect.y + 3)
+            love.graphics.setColor(selected and 0.98 or 0.9, selected and 0.9 or 0.9, selected and 0.58 or 0.86, 1)
             love.graphics.print(game.localization:get(item.key), rect.x, rect.y + 2)
         end
 
         love.graphics.setFont(game.assets:get_font("small"))
+        love.graphics.setColor(0.04, 0.03, 0.02, 0.9)
+        love.graphics.printf(game.localization:get("menu_hint"), 1, height - 19, width, "center")
         love.graphics.setColor(1, 1, 1, 1)
         love.graphics.printf(game.localization:get("menu_hint"), 0, height - 20, width, "center")
     end

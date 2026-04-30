@@ -54,6 +54,8 @@ h1 {
     width: 100%;
     border-collapse: collapse;
     font-family: var(--font-score);
+    font-variant-numeric: tabular-nums;
+    table-layout: fixed;
 }
 
 .scores th,
@@ -76,10 +78,32 @@ h1 {
     background: var(--row-alt-bg);
 }
 
-.scores td:nth-child(3),
-.scores td:nth-child(4),
-.scores td:nth-child(5) {
+.scores__rank {
+    width: 4rem;
     text-align: right;
+}
+
+.scores__player {
+    width: auto;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.scores__score {
+    width: 8rem;
+    text-align: right;
+    white-space: nowrap;
+}
+
+.scores__level {
+    width: 5rem;
+    text-align: right;
+}
+
+.scores__victory {
+    width: 4rem;
+    text-align: center;
 }
 
 .victory {
@@ -99,5 +123,21 @@ h1 {
     .scores th,
     .scores td {
         padding: 10px 6px;
+    }
+
+    .scores__rank {
+        width: 2.5rem;
+    }
+
+    .scores__score {
+        width: 6rem;
+    }
+
+    .scores__level {
+        width: 4rem;
+    }
+
+    .scores__victory {
+        width: 3rem;
     }
 }

@@ -32,6 +32,7 @@ return function(game)
     function state:draw()
         local width = game.renderer.logical_width
         local height = game.renderer.logical_height
+        local header_y = self.message_key and 70 or 50
         love.graphics.setColor(0.08, 0.08, 0.12, 1)
         love.graphics.rectangle("fill", 0, 0, width, height)
 
@@ -45,18 +46,28 @@ return function(game)
             love.graphics.printf(game.localization:get(self.message_key), 28, 42, width - 56, "center")
         end
 
-        love.graphics.setFont(game.assets:get_font("medium"))
+        love.graphics.setFont(game.assets:get_font("small"))
         love.graphics.setColor(1, 1, 1, 1)
         if #self.entries == 0 then
             local empty_key = self.source == "online" and "highscore_online_empty" or "highscore_empty"
             love.graphics.printf(game.localization:get(empty_key), 0, 116, width, "center")
         else
+            love.graphics.setColor(0.66, 0.75, 0.84, 1)
+            love.graphics.printf("#", 30, header_y, 24, "right")
+            love.graphics.printf(game.localization:get("highscore_player_header"), 64, header_y, 100, "left")
+            love.graphics.printf(game.localization:get("highscore_score_header"), 166, header_y, 58, "right")
+            love.graphics.printf(game.localization:get("highscore_level_header"), 238, header_y, 38, "right")
+            love.graphics.printf(game.localization:get("highscore_win_header"), 286, header_y, 18, "center")
+
             for index, entry in ipairs(self.entries) do
-                local y = 58 + index * 16
+                local y = header_y + 8 + index * 14
                 local marker = entry.victory and "*" or " "
-                local level = entry.level_ended and (" L" .. tostring(entry.level_ended)) or ""
-                local line = string.format("%02d %s %-12s %05d%s", index, marker, entry.name or "PLY", entry.score or 0, level)
-                love.graphics.printf(line, 46, y, width - 92, "left")
+                love.graphics.setColor(1, 1, 1, 1)
+                love.graphics.printf(string.format("%02d", index), 30, y, 24, "right")
+                love.graphics.printf(tostring(entry.name or "PLY"):sub(1, 12), 64, y, 100, "left")
+                love.graphics.printf(string.format("%05d", entry.score or 0), 166, y, 58, "right")
+                love.graphics.printf(tostring(entry.level_ended or "-"), 238, y, 38, "right")
+                love.graphics.printf(marker, 286, y, 18, "center")
             end
         end
 

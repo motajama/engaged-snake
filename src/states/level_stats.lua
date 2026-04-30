@@ -106,8 +106,6 @@ return function(game)
         love.graphics.rectangle("fill", 0, 0, width, height)
         love.graphics.setColor(panel)
         love.graphics.rectangle("fill", 24, 24, width - 48, height - 48)
-        love.graphics.setColor(accent)
-        love.graphics.rectangle("line", 28, 28, width - 56, height - 56)
 
         love.graphics.setFont(game.assets:get_font("medium"))
         love.graphics.setColor(accent)

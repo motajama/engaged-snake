@@ -50,21 +50,21 @@ function e(string $value): string
             <table class="scores">
                 <thead>
                     <tr>
-                        <th scope="col">#</th>
-                        <th scope="col">Player</th>
-                        <th scope="col">Score</th>
-                        <th scope="col">Level</th>
-                        <th scope="col">Win</th>
+                        <th class="scores__rank" scope="col">#</th>
+                        <th class="scores__player" scope="col">Player</th>
+                        <th class="scores__score" scope="col">Score</th>
+                        <th class="scores__level" scope="col">Level</th>
+                        <th class="scores__victory" scope="col">Win</th>
                     </tr>
                 </thead>
                 <tbody>
                     <?php foreach ($scores as $index => $score): ?>
                         <tr>
-                            <td><?= $index + 1 ?></td>
-                            <td><?= e((string) $score['player_name']) ?></td>
-                            <td><?= number_format((int) $score['score']) ?></td>
-                            <td><?= (int) $score['level_ended'] ?></td>
-                            <td class="victory"><?= ((int) $score['victory']) === 1 ? '*' : '' ?></td>
+                            <td class="scores__rank"><?= $index + 1 ?></td>
+                            <td class="scores__player"><?= e((string) $score['player_name']) ?></td>
+                            <td class="scores__score"><?= number_format((int) $score['score']) ?></td>
+                            <td class="scores__level"><?= (int) $score['level_ended'] ?></td>
+                            <td class="scores__victory victory"><?= ((int) $score['victory']) === 1 ? '*' : '' ?></td>
                         </tr>
                     <?php endforeach; ?>
                 </tbody>
