@@ -29,7 +29,7 @@ function Snake.new(start_x, start_y)
 end
 
 function Snake:set_direction(direction)
-    if direction and direction ~= opposite[self.direction] then
+    if direction and direction ~= opposite[self.direction] and direction ~= opposite[self.queued_direction] then
         self.queued_direction = direction
     end
 end

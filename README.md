@@ -14,8 +14,9 @@
 - Wolf3D-style text-pointer main menu and difficulty selection
 - Animated end-of-level stats screen with generated SFX fallbacks
 - Save/load for settings and highscores through `love.filesystem`
+- Optional online score upload through the PHP backend in `backend/`
 - Color and monochrome CRT video modes
-- Browser-export-friendly Lua without external LuaRocks dependencies
+- Browser-export-friendly Lua; optional online score upload needs LuaSocket/LuaSec in the LÖVE runtime
 
 ## Run
 
@@ -36,6 +37,7 @@ make check
 ```
 
 This runs `luac -p` over the Lua sources.
+It also decodes the bundled dataset/localization JSON and runs the pure-Lua regression specs in `tests/`.
 
 ## Controls
 
@@ -79,6 +81,10 @@ See [WEB.md](/home/motajama/Code/engaged-snake/WEB.md) for a step-by-step guide 
 - export the game for the browser with `love.js`-style tooling
 - host it as a standalone webpage
 - embed it into an existing website
+
+## Online Scores
+
+See [ONLINE_SCORES.md](/home/motajama/Code/engaged-snake/ONLINE_SCORES.md) for the MySQL schema, PHP backend setup, password-hash generation, LuaSocket/LuaSec runtime setup, client config, and public scoreboard page.
 
 ## Notes
 

@@ -17,6 +17,7 @@ Settings.defaults = {
     language = "en",
     control_layout = "right_handed",
     touch_controls = "auto",
+    player_name = "PLY",
 }
 
 Settings.options = {

@@ -23,7 +23,9 @@ return function(game)
         else
             for index, entry in ipairs(game.highscores.entries) do
                 local y = 42 + index * 16
-                local line = string.format("%02d  %s  %05d", index, entry.name or "PLY", entry.score or 0)
+                local marker = entry.victory and "*" or " "
+                local level = entry.level_ended and (" L" .. tostring(entry.level_ended)) or ""
+                local line = string.format("%02d %s %-12s %05d%s", index, marker, entry.name or "PLY", entry.score or 0, level)
                 love.graphics.printf(line, 46, y, width - 92, "left")
             end
         end

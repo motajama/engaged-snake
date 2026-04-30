@@ -87,7 +87,7 @@ return function(game)
 
         if game.input:any_pressed() then
             if game.session.level_index >= Levels.count(game.dataset) then
-                game.state_machine:change("victory")
+                game.state_machine:change("score_entry", { victory = true })
             else
                 game.session.level_index = game.session.level_index + 1
                 game.state_machine:change("story")

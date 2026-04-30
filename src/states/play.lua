@@ -198,7 +198,7 @@ return function(game)
 
             if game.session.lives <= 0 then
                 game.audio:stop_music()
-                game.state_machine:change("game_over")
+                game.state_machine:change("score_entry", { victory = false })
                 return
             end
 

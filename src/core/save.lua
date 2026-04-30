@@ -52,6 +52,7 @@ function Save:save_highscores(highscores)
 end
 
 function Save:add_highscore(highscores, entry)
+    highscores.entries = highscores.entries or {}
     highscores.entries[#highscores.entries + 1] = entry
     table.sort(highscores.entries, function(a, b)
         return (a.score or 0) > (b.score or 0)

@@ -41,6 +41,12 @@ function love.keyreleased(key, scancode)
     end
 end
 
+function love.textinput(text)
+    if game then
+        game:textinput(text)
+    end
+end
+
 function love.mousepressed(x, y, button, istouch, presses)
     if game then
         game:mousepressed(x, y, button, istouch, presses)

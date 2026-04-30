@@ -13,7 +13,8 @@ love:
 	zip -9 -r $(LOVE_FILE) . \
 		-x "*.git*" \
 		-x "$(BUILD_DIR)/*" \
-		-x ".codex/*"
+		-x ".codex/*" \
+		-x "backend/*"
 
 clean:
 	rm -rf $(BUILD_DIR)
@@ -22,3 +23,12 @@ check:
 	find . -name '*.lua' ! -path './.git/*' ! -path './build/*' -print | sort | while read -r file; do \
 		luac -p "$$file"; \
 	done
+	lua scripts/check_data.lua
+	for file in tests/*_spec.lua; do \
+		lua "$$file"; \
+	done
+	if command -v php >/dev/null 2>&1; then \
+		find backend -name '*.php' -print | sort | while read -r file; do \
+			php -l "$$file" >/dev/null; \
+		done; \
+	fi

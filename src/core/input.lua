@@ -27,6 +27,7 @@ function Input.new(renderer)
         pressed = {},
         released = {},
         tapped_points = {},
+        text_inputs = {},
         any_press = false,
         last_direction = nil,
     }, Input)
@@ -36,6 +37,7 @@ function Input:begin_frame()
     self.pressed = {}
     self.released = {}
     self.tapped_points = {}
+    self.text_inputs = {}
     self.any_press = false
     self.last_direction = nil
 end
@@ -50,6 +52,11 @@ end
 
 function Input:keyreleased(key)
     self.released[key] = true
+end
+
+function Input:textinput(text)
+    self.text_inputs[#self.text_inputs + 1] = text
+    self.any_press = true
 end
 
 function Input:pointerpressed(x, y)
@@ -94,6 +101,10 @@ end
 
 function Input:get_taps()
     return self.tapped_points
+end
+
+function Input:get_text_inputs()
+    return self.text_inputs
 end
 
 return Input

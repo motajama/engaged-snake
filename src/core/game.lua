@@ -8,6 +8,7 @@ local Localization = require("src.core.localization")
 local Settings = require("src.core.settings")
 local CRT = require("src.systems.crt")
 local Constants = require("src.core.constants")
+local OnlineScores = require("src.core.online_scores")
 
 local Game = {}
 Game.__index = Game
@@ -28,6 +29,7 @@ function Game.new()
         settings = settings,
         localization = Localization.new(),
         assets = Assets.new(renderer),
+        online_scores = OnlineScores.new(),
         audio = nil,
         crt = nil,
         dataset = nil,
@@ -56,6 +58,7 @@ function Game:register_states()
     self.state_factories.level_stats = require("src.states.level_stats")
     self.state_factories.game_over = require("src.states.game_over")
     self.state_factories.victory = require("src.states.victory")
+    self.state_factories.score_entry = require("src.states.score_entry")
 end
 
 function Game:load()
@@ -165,6 +168,10 @@ end
 
 function Game:keyreleased(key)
     self.input:keyreleased(key)
+end
+
+function Game:textinput(text)
+    self.input:textinput(text)
 end
 
 function Game:mousepressed(x, y, _button, istouch)
