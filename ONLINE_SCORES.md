@@ -109,12 +109,15 @@ Copy `score_client_config.sample.lua` to `score_client_config.lua` and set:
 ```lua
 return {
     endpoint = "https://your-server.example/path/to/submit.php",
+    scores_endpoint = "https://your-server.example/path/to/scores.php",
     password = "your-unique-upload-password",
     timeout = 4,
 }
 ```
 
-The real `score_client_config.lua` is ignored by git. The game still saves scores locally when the file is missing, when LuaSocket/LuaSec is unavailable, or when the upload fails. HTTPS endpoints require LuaSec (`ssl.https`); plain HTTP endpoints require LuaSocket (`socket.http`).
+The real `score_client_config.lua` is ignored by git. `scores_endpoint` is optional when it sits beside `submit.php`; if omitted, the game derives it by replacing `submit.php` with `scores.php`.
+
+The game still saves scores locally when the file is missing, when LuaSocket/LuaSec is unavailable, or when the upload fails. The in-game high-score screen loads online scores when the server is reachable; if the connection fails, it shows a message and displays locally stored scores instead. HTTPS endpoints require LuaSec (`ssl.https`); plain HTTP endpoints require LuaSocket (`socket.http`).
 
 ### Step 3: Verify Upload Behavior
 
@@ -122,8 +125,9 @@ The real `score_client_config.lua` is ignored by git. The game still saves score
 2. Finish a run or lose all lives.
 3. Enter a player name and save the score.
 4. Open `backend/index.php` on the server and confirm the score appears.
+5. Open the in-game high-score screen. With a working connection it should show server scores; with the server unreachable it should say that local scores are being shown.
 
-If the score appears only in the in-game local high score table, check that `score_client_config.lua` exists, the endpoint URL is correct, and LÖVE can load `socket.http`, `ssl.https`, and `ltn12`.
+If the score appears only in the in-game local high-score table, check that `score_client_config.lua` exists, `endpoint` and `scores_endpoint` are correct, and LÖVE can load `socket.http`, `ssl.https`, and `ltn12`.
 
 ## Public Scoreboard
 

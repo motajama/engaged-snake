@@ -32,6 +32,8 @@
   "value_death": "SMRT",
   "highscore_title": "TABULKA SKORE",
   "highscore_empty": "Zatim nejsou ulozena zadna skore.",
+  "highscore_online_empty": "Zatim nejsou ulozena zadna online skore.",
+  "highscore_local_fallback": "Internet neni dostupny nebo se nelze pripojit k serveru skore. Zobrazuji lokalne ulozena skore.",
   "back_hint": "Stiskni klavesu, klikni nebo tapni pro navrat",
   "story_continue": "Stiskni klavesu, klikni nebo tapni pro start",
   "story_skip": "Stiskni klavesu, klikni nebo tapni pro dopsani textu",

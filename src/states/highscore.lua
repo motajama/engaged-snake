@@ -1,5 +1,27 @@
 return function(game)
-    local state = {}
+    local state = {
+        entries = {},
+        source = "local",
+        message_key = nil,
+    }
+
+    local function load_scores(state_ref)
+        local ok, scores = game.online_scores:fetch_scores()
+        if ok then
+            state_ref.entries = scores
+            state_ref.source = "online"
+            state_ref.message_key = nil
+            return
+        end
+
+        state_ref.entries = game.highscores.entries or {}
+        state_ref.source = "local"
+        state_ref.message_key = "highscore_local_fallback"
+    end
+
+    function state:enter()
+        load_scores(self)
+    end
 
     function state:update()
         if game.input:confirm_pressed() or game.input:back_pressed() or game.input:any_pressed() then
@@ -17,12 +39,20 @@ return function(game)
         love.graphics.setColor(1, 1, 1, 1)
         love.graphics.printf(game.localization:get("highscore_title"), 0, 18, width, "center")
 
+        if self.message_key then
+            love.graphics.setFont(game.assets:get_font("small"))
+            love.graphics.setColor(0.95, 0.78, 0.36, 1)
+            love.graphics.printf(game.localization:get(self.message_key), 28, 42, width - 56, "center")
+        end
+
         love.graphics.setFont(game.assets:get_font("medium"))
-        if #game.highscores.entries == 0 then
-            love.graphics.printf(game.localization:get("highscore_empty"), 0, 116, width, "center")
+        love.graphics.setColor(1, 1, 1, 1)
+        if #self.entries == 0 then
+            local empty_key = self.source == "online" and "highscore_online_empty" or "highscore_empty"
+            love.graphics.printf(game.localization:get(empty_key), 0, 116, width, "center")
         else
-            for index, entry in ipairs(game.highscores.entries) do
-                local y = 42 + index * 16
+            for index, entry in ipairs(self.entries) do
+                local y = 58 + index * 16
                 local marker = entry.victory and "*" or " "
                 local level = entry.level_ended and (" L" .. tostring(entry.level_ended)) or ""
                 local line = string.format("%02d %s %-12s %05d%s", index, marker, entry.name or "PLY", entry.score or 0, level)
